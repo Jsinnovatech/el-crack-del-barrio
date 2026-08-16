@@ -1,0 +1,42 @@
+name: crack_del_barrio
+description: App móvil de El Crack del Barrio — jugadores y captadores de fútbol.
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.3.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.6
+
+  # Networking
+  dio: ^5.4.3+1
+
+  # Estado global
+  provider: ^6.1.2
+
+  # Persistencia local de sesión (token, último rol, etc.)
+  shared_preferences: ^2.2.3
+
+  # Fuentes Google
+  google_fonts: ^6.2.1
+
+  # Imágenes en red con caché
+  cached_network_image: ^3.4.1
+
+  # Utilidades
+  intl: ^0.19.0
+  url_launcher: ^6.3.0
+  table_calendar: ^3.1.2
+  image_picker: ^1.1.2
+  fl_chart: ^0.68.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+
+flutter:
+  uses-material-design: true

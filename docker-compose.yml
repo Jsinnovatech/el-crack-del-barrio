@@ -1,0 +1,41 @@
+version: '3.9'
+
+services:
+  db:
+    image: postgres:16-alpine
+    restart: always
+    environment:
+      POSTGRES_USER: crack
+      POSTGRES_PASSWORD: crack123
+      POSTGRES_DB: crackdelbarrio
+    ports:
+      - "5432:5432"
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U crack -d crackdelbarrio"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    restart: always
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    environment:
+      DATABASE_URL: postgresql://crack:crack123@db:5432/crackdelbarrio
+      JWT_SECRET: dev-secret-key-change-in-production-minimum-32-chars
+      OTP_DEV_CODE: "123456"
+      CORS_ORIGINS: "http://localhost:3000,http://localhost:8080,http://10.0.2.2:8000"
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  pg_data:

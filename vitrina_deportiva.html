@@ -1,0 +1,1968 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>El Crack del Barrio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg-base:#0a0f0c; --bg-surface:#121814; --bg-elevated:#1a231c; --bg-overlay:#222f26;
+  --text-primary:#f2f7f3; --text-secondary:#9fb3a6; --text-muted:#5f7268;
+  --border-subtle:rgba(255,255,255,.06); --border-default:rgba(255,255,255,.12); --border-strong:rgba(255,255,255,.2);
+  --accent:#22c55e; --accent-2:#16a34a; --accent-glow:rgba(34,197,94,.28);
+  --gold:#f5b400; --gold-glow:rgba(245,180,0,.25);
+  --danger:#ef4444; --info:#38bdf8; --warning:#f59e0b;
+  --radius-sm:8px; --radius-md:12px; --radius-lg:16px; --radius-xl:24px; --radius-full:9999px;
+  --shadow-card:0 4px 24px rgba(0,0,0,.45); --shadow-modal:0 8px 48px rgba(0,0,0,.65); --shadow-glow:0 0 24px var(--accent-glow);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;}
+body{font-family:'Barlow',sans-serif;background:#000;color:var(--text-primary);}
+h1,h2,h3,.display{font-family:'Barlow Condensed',sans-serif;font-weight:700;letter-spacing:.2px;}
+img{display:block;}
+button{font-family:inherit;}
+.app-shell{max-width:430px;margin:0 auto;height:100dvh;display:flex;flex-direction:column;background:var(--bg-base);position:relative;overflow:hidden;background-image:radial-gradient(circle at 20% 0%, rgba(34,197,94,.10), transparent 45%), radial-gradient(circle at 90% 10%, rgba(245,180,0,.06), transparent 40%);}
+.screen{display:none;flex-direction:column;height:100%;}
+.screen.active{display:flex;}
+.screen-content{flex:1;overflow-y:auto;padding:16px 18px;padding-bottom:calc(84px + env(safe-area-inset-bottom));-webkit-overflow-scrolling:touch;scrollbar-width:none;}
+.screen-content::-webkit-scrollbar{display:none;}
+.screen-content.no-nav{padding-bottom:24px;}
+
+/* ---- Onboarding ---- */
+#screen-onboarding .screen-content{display:flex;flex-direction:column;justify-content:center;padding:28px 24px;}
+.brand{display:flex;align-items:center;gap:10px;margin-bottom:36px;}
+.brand-mark{width:44px;height:44px;border-radius:var(--radius-md);background:linear-gradient(135deg,var(--accent),#0a3d1f);display:flex;align-items:center;justify-content:center;box-shadow:var(--shadow-glow);}
+.brand-name{font-size:21px;font-weight:800;line-height:1.15;}
+.brand-name span{color:var(--accent);}
+.hero-title{font-size:38px;line-height:1.05;font-weight:800;margin-bottom:10px;}
+.hero-title .accent{color:var(--accent);}
+.hero-sub{color:var(--text-secondary);font-size:15px;line-height:1.5;margin-bottom:32px;}
+.role-card{background:var(--bg-surface);border:1px solid var(--border-subtle);border-radius:var(--radius-xl);padding:18px;display:flex;gap:14px;align-items:center;margin-bottom:14px;cursor:pointer;transition:all .2s ease;position:relative;overflow:hidden;}
+.role-card:active{transform:scale(.98);background:var(--bg-overlay);}
+.role-card.scout{border-color:rgba(245,180,0,.25);}
+.role-icon{width:52px;height:52px;border-radius:var(--radius-md);display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(34,197,94,.15);color:var(--accent);}
+.role-card.scout .role-icon{background:rgba(245,180,0,.15);color:var(--gold);}
+.role-card h3{font-size:19px;margin-bottom:3px;}
+.role-card p{font-size:12.5px;color:var(--text-secondary);line-height:1.35;}
+.role-arrow{margin-left:auto;color:var(--text-muted);flex-shrink:0;}
+
+/* ---- Login mock ---- */
+.login-content{padding:28px 24px;display:flex;flex-direction:column;height:100%;}
+.back-mini{width:38px;height:38px;border-radius:var(--radius-md);background:var(--bg-elevated);display:flex;align-items:center;justify-content:center;color:var(--text-primary);border:none;margin-bottom:26px;cursor:pointer;}
+.login-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(34,197,94,.12);color:var(--accent);border:1px solid rgba(34,197,94,.25);padding:5px 12px;border-radius:var(--radius-full);font-size:12px;font-weight:600;margin-bottom:14px;width:fit-content;}
+.login-badge.gold{background:rgba(245,180,0,.12);color:var(--gold);border-color:rgba(245,180,0,.25);}
+.field{margin-bottom:14px;}
+.field label{font-size:12.5px;color:var(--text-secondary);font-weight:600;display:block;margin-bottom:6px;}
+.input-field{background:var(--bg-elevated);border:1px solid var(--border-default);border-radius:var(--radius-md);color:var(--text-primary);padding:13px 14px;font-size:15px;outline:none;width:100%;transition:border-color .2s,box-shadow .2s;}
+.input-field:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-glow);}
+.input-field::placeholder{color:var(--text-muted);}
+textarea.input-field{resize:none;min-height:80px;font-family:inherit;}
+select.input-field{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%235f7268' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;}
+.btn-primary{background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#03150a;border:none;border-radius:var(--radius-full);padding:14px 24px;font-weight:700;font-size:15px;cursor:pointer;transition:all .2s ease;box-shadow:0 4px 18px var(--accent-glow);width:100%;display:flex;align-items:center;justify-content:center;gap:8px;}
+.btn-primary:active{transform:translateY(1px);filter:brightness(.95);}
+.btn-primary.gold{background:linear-gradient(135deg,var(--gold),#c98f00);box-shadow:0 4px 18px var(--gold-glow);color:#1c1300;}
+.btn-secondary{background:var(--bg-elevated);color:var(--text-primary);border:1px solid var(--border-default);border-radius:var(--radius-full);padding:13px 22px;font-weight:600;font-size:14px;cursor:pointer;width:100%;}
+.btn-ghost{background:transparent;border:none;color:var(--accent);font-weight:600;font-size:14px;cursor:pointer;padding:10px;}
+
+/* ---- Top bar ---- */
+.top-bar{padding:calc(env(safe-area-inset-top) + 14px) 18px 14px;background:rgba(10,15,12,.85);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid var(--border-subtle);flex-shrink:0;z-index:10;}
+.top-bar-inner{display:flex;align-items:center;justify-content:space-between;gap:10px;}
+.greeting-sub{font-size:12px;color:var(--text-muted);}
+.greeting-name{font-size:19px;font-weight:700;}
+.icon-btn{width:38px;height:38px;flex-shrink:0;display:flex;align-items:center;justify-content:center;border:none;background:var(--bg-elevated);border-radius:var(--radius-md);cursor:pointer;color:var(--text-primary);position:relative;}
+.icon-btn:active{background:var(--bg-overlay);}
+.avatar-wrap{position:relative;flex-shrink:0;}
+.avatar{width:40px;height:40px;border-radius:50%;object-fit:cover;border:2px solid var(--border-default);}
+.avatar-badge{position:absolute;bottom:-1px;right:-1px;width:12px;height:12px;background:var(--accent);border-radius:50%;border:2px solid var(--bg-base);}
+.screen-title{font-size:17px;font-weight:700;}
+.tab-row{display:flex;gap:6px;margin-top:14px;overflow-x:auto;scrollbar-width:none;}
+.tab-row::-webkit-scrollbar{display:none;}
+.tab-chip{flex-shrink:0;padding:8px 15px;border-radius:var(--radius-full);background:var(--bg-elevated);border:1px solid var(--border-subtle);font-size:13px;font-weight:600;color:var(--text-secondary);cursor:pointer;white-space:nowrap;transition:all .15s;}
+.tab-chip.active{background:var(--accent);color:#03150a;border-color:var(--accent);}
+
+/* ---- Bottom nav ---- */
+.bottom-nav{position:absolute;bottom:0;left:0;right:0;height:72px;background:rgba(10,15,12,.92);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:1px solid var(--border-subtle);display:flex;align-items:center;justify-content:space-around;padding-bottom:env(safe-area-inset-bottom);z-index:20;}
+.nav-item{display:flex;flex-direction:column;align-items:center;gap:4px;background:none;border:none;color:var(--text-muted);font-size:10.5px;font-weight:600;cursor:pointer;padding:6px 10px;border-radius:var(--radius-md);transition:color .15s;}
+.nav-item.active{color:var(--accent);}
+.nav-item svg{width:22px;height:22px;}
+
+/* ---- Cards / generic ---- */
+.section-label{font-size:12px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.6px;margin:20px 0 10px;}
+.section-label:first-child{margin-top:0;}
+.card{background:var(--bg-surface);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:16px;box-shadow:var(--shadow-card);margin-bottom:12px;}
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:6px;}
+.stat-card{background:var(--bg-surface);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:14px;}
+.stat-icon{width:34px;height:34px;display:flex;align-items:center;justify-content:center;border-radius:var(--radius-md);margin-bottom:8px;}
+.stat-icon svg{width:17px;height:17px;}
+.stat-icon.success{background:rgba(34,197,94,.15);color:var(--accent);}
+.stat-icon.gold{background:rgba(245,180,0,.15);color:var(--gold);}
+.stat-icon.info{background:rgba(56,189,248,.15);color:var(--info);}
+.stat-icon.danger{background:rgba(239,68,68,.15);color:var(--danger);}
+.stat-value{font-size:23px;font-weight:800;}
+.stat-label{font-size:11.5px;color:var(--text-muted);margin-top:1px;}
+
+.completion-card{background:linear-gradient(135deg,rgba(34,197,94,.14),rgba(34,197,94,.02));border:1px solid rgba(34,197,94,.22);border-radius:var(--radius-lg);padding:16px;margin-bottom:16px;}
+.completion-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+.completion-top strong{font-size:14px;}
+.completion-top span{font-size:13px;color:var(--accent);font-weight:700;}
+.progress-track{height:7px;border-radius:var(--radius-full);background:var(--bg-elevated);overflow:hidden;}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--accent),#8ff5b0);border-radius:var(--radius-full);transition:width .4s ease;}
+
+.player-card{background:var(--bg-surface);border:1px solid var(--border-subtle);border-radius:var(--radius-xl);overflow:hidden;margin-bottom:14px;box-shadow:var(--shadow-card);cursor:pointer;transition:transform .15s;}
+.player-card:active{transform:scale(.98);}
+.player-photo-wrap{position:relative;height:170px;background:var(--bg-elevated);}
+.player-photo-wrap img{width:100%;height:100%;object-fit:cover;}
+.player-photo-grad{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0) 40%,rgba(5,10,7,.92) 100%);}
+.player-pos-badge{position:absolute;top:10px;left:10px;background:rgba(0,0,0,.55);backdrop-filter:blur(6px);color:#fff;font-size:11px;font-weight:700;padding:5px 10px;border-radius:var(--radius-full);border:1px solid rgba(255,255,255,.15);}
+.player-verified{position:absolute;top:10px;right:10px;width:26px;height:26px;background:var(--gold);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#1c1300;box-shadow:0 0 10px var(--gold-glow);}
+.player-info-overlay{position:absolute;bottom:10px;left:12px;right:12px;}
+.player-name-ov{font-size:19px;font-weight:800;color:#fff;}
+.player-meta-ov{font-size:12px;color:#d5e6da;display:flex;align-items:center;gap:6px;margin-top:2px;}
+.player-body{padding:12px 14px;display:flex;align-items:center;justify-content:space-between;gap:8px;}
+.player-tags{display:flex;gap:6px;flex-wrap:wrap;}
+.tag{font-size:10.5px;font-weight:600;color:var(--text-secondary);background:var(--bg-elevated);border:1px solid var(--border-subtle);padding:4px 8px;border-radius:var(--radius-full);}
+.fav-btn{width:36px;height:36px;border-radius:50%;background:var(--bg-elevated);border:1px solid var(--border-subtle);display:flex;align-items:center;justify-content:center;color:var(--text-muted);flex-shrink:0;cursor:pointer;}
+.fav-btn.active{color:#ff4d6d;border-color:rgba(255,77,109,.4);background:rgba(255,77,109,.12);}
+.fav-btn svg{width:17px;height:17px;}
+
+.search-bar{display:flex;align-items:center;gap:10px;background:var(--bg-elevated);border:1px solid var(--border-default);border-radius:var(--radius-full);padding:11px 16px;margin-bottom:12px;}
+.search-bar svg{width:18px;height:18px;color:var(--text-muted);flex-shrink:0;}
+.search-bar input{background:none;border:none;outline:none;color:var(--text-primary);font-size:14.5px;width:100%;font-family:inherit;}
+.filter-btn{width:44px;height:44px;flex-shrink:0;border-radius:var(--radius-md);background:var(--bg-elevated);border:1px solid var(--border-default);display:flex;align-items:center;justify-content:center;color:var(--accent);cursor:pointer;}
+
+/* profile detail */
+.profile-hero{position:relative;height:280px;margin:-16px -18px 0;border-radius:0 0 var(--radius-xl) var(--radius-xl);overflow:hidden;background:var(--bg-elevated);}
+.profile-hero img{width:100%;height:100%;object-fit:cover;}
+.profile-hero-grad{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.1) 0%,rgba(6,10,8,.15) 55%,rgba(6,10,8,.98) 100%);}
+.profile-hero-top{position:absolute;top:calc(env(safe-area-inset-top) + 14px);left:16px;right:16px;display:flex;justify-content:space-between;}
+.profile-hero-bottom{position:absolute;bottom:16px;left:18px;right:18px;}
+.profile-name-h{font-size:26px;font-weight:800;color:#fff;}
+.profile-sub-h{font-size:13px;color:#cfe4d6;margin-top:2px;display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
+.info-row{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--border-subtle);}
+.info-row:last-child{border-bottom:none;}
+.info-row-icon{width:36px;height:36px;border-radius:var(--radius-md);background:var(--bg-elevated);display:flex;align-items:center;justify-content:center;color:var(--accent);flex-shrink:0;}
+.info-row-icon svg{width:16px;height:16px;}
+.info-row-label{font-size:11.5px;color:var(--text-muted);}
+.info-row-value{font-size:14.5px;font-weight:600;margin-top:1px;}
+.club-item{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--border-subtle);align-items:flex-start;}
+.club-item:last-child{border-bottom:none;}
+.club-icon{width:38px;height:38px;border-radius:var(--radius-md);background:rgba(245,180,0,.14);color:var(--gold);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.club-icon svg{width:17px;height:17px;}
+.club-name{font-size:14.5px;font-weight:700;}
+.club-detail{font-size:12.5px;color:var(--text-secondary);margin-top:1px;}
+.club-badge{margin-top:6px;display:inline-block;}
+
+.video-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.video-thumb{position:relative;aspect-ratio:9/12;border-radius:var(--radius-md);overflow:hidden;background:var(--bg-elevated);cursor:pointer;}
+.video-thumb img{width:100%;height:100%;object-fit:cover;}
+.video-thumb-grad{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.05),rgba(0,0,0,.75));}
+.video-play{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:38px;height:38px;background:rgba(255,255,255,.92);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#0a0f0c;}
+.video-play svg{width:16px;height:16px;margin-left:2px;}
+.video-cap{position:absolute;bottom:8px;left:8px;right:8px;font-size:11px;font-weight:600;color:#fff;}
+
+.upload-box{border:1.5px dashed var(--border-default);border-radius:var(--radius-lg);padding:22px 14px;display:flex;flex-direction:column;align-items:center;gap:8px;cursor:pointer;background:var(--bg-elevated);transition:border-color .15s;}
+.upload-box:active{border-color:var(--accent);}
+.upload-box svg{width:26px;height:26px;color:var(--accent);}
+.upload-box span{font-size:13px;font-weight:600;color:var(--text-secondary);}
+.upload-box small{font-size:11px;color:var(--text-muted);}
+.thumb-preview{width:100%;aspect-ratio:1;border-radius:var(--radius-lg);object-fit:cover;border:1px solid var(--border-default);}
+
+/* calendar */
+.cal-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+.cal-nav strong{font-size:16px;text-transform:capitalize;}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-bottom:10px;}
+.cal-dow{text-align:center;font-size:10.5px;color:var(--text-muted);font-weight:700;padding-bottom:4px;}
+.cal-day{aspect-ratio:1;display:flex;align-items:center;justify-content:center;border-radius:var(--radius-md);font-size:13px;font-weight:600;cursor:pointer;background:var(--bg-elevated);border:1px solid var(--border-subtle);color:var(--text-secondary);position:relative;}
+.cal-day.empty{background:none;border:none;cursor:default;}
+.cal-day.disponible{background:rgba(34,197,94,.16);color:var(--accent);border-color:rgba(34,197,94,.3);}
+.cal-day.contratado{background:rgba(239,68,68,.16);color:#ff9c9c;border-color:rgba(239,68,68,.3);}
+.cal-day.no{background:rgba(255,255,255,.03);color:var(--text-muted);}
+.cal-day.today{box-shadow:0 0 0 2px var(--gold);}
+.legend{display:flex;gap:14px;flex-wrap:wrap;margin-top:4px;}
+.legend-item{display:flex;align-items:center;gap:6px;font-size:11.5px;color:var(--text-secondary);}
+.legend-dot{width:9px;height:9px;border-radius:50%;}
+
+/* pricing */
+.plan-card{background:var(--bg-surface);border:1.5px solid var(--border-subtle);border-radius:var(--radius-xl);padding:18px;margin-bottom:12px;position:relative;overflow:hidden;}
+.plan-card.current{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent),0 8px 24px rgba(34,197,94,.15);}
+.plan-card.featured{border-color:rgba(245,180,0,.5);}
+.plan-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;}
+.plan-name{font-size:17px;font-weight:800;}
+.plan-price{font-size:26px;font-weight:800;color:var(--accent);}
+.plan-price small{font-size:12px;color:var(--text-muted);font-weight:600;}
+.plan-card.featured .plan-price{color:var(--gold);}
+.plan-desc{font-size:12.5px;color:var(--text-secondary);margin-bottom:12px;}
+.plan-feat{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text-secondary);margin-bottom:7px;}
+.plan-feat svg{width:15px;height:15px;color:var(--accent);flex-shrink:0;}
+.plan-card.featured .plan-feat svg{color:var(--gold);}
+.plan-ribbon{position:absolute;top:12px;right:-30px;transform:rotate(35deg);background:var(--gold);color:#1c1300;font-size:10px;font-weight:800;padding:3px 34px;letter-spacing:.4px;}
+.badge-success{background:rgba(34,197,94,.15);color:var(--accent);border:1px solid rgba(34,197,94,.3);border-radius:var(--radius-full);padding:4px 10px;font-size:11.5px;font-weight:700;}
+.badge-gold{background:rgba(245,180,0,.15);color:var(--gold);border:1px solid rgba(245,180,0,.3);border-radius:var(--radius-full);padding:4px 10px;font-size:11.5px;font-weight:700;}
+.badge-muted{background:var(--bg-elevated);color:var(--text-muted);border:1px solid var(--border-subtle);border-radius:var(--radius-full);padding:4px 10px;font-size:11.5px;font-weight:700;}
+
+/* modal / sheet */
+.overlay{position:absolute;inset:0;background:rgba(0,0,0,.6);z-index:40;display:none;align-items:flex-end;backdrop-filter:blur(2px);}
+.overlay.active{display:flex;}
+.sheet{background:var(--bg-surface);border-radius:var(--radius-xl) var(--radius-xl) 0 0;width:100%;max-height:88%;overflow-y:auto;padding:10px 20px calc(24px + env(safe-area-inset-bottom));box-shadow:var(--shadow-modal);animation:slideUp .28s cubic-bezier(.16,1,.3,1);}
+@keyframes slideUp{from{transform:translateY(100%);}to{transform:translateY(0);}}
+.sheet-handle{width:38px;height:4px;background:var(--border-strong);border-radius:var(--radius-full);margin:8px auto 16px;}
+.sheet-title{font-size:19px;font-weight:800;margin-bottom:4px;}
+.sheet-sub{font-size:12.5px;color:var(--text-secondary);margin-bottom:16px;}
+.toast{position:absolute;left:50%;bottom:96px;transform:translateX(-50%);background:var(--bg-elevated);border:1px solid var(--border-default);color:var(--text-primary);padding:12px 18px;border-radius:var(--radius-full);font-size:13px;font-weight:600;display:flex;align-items:center;gap:8px;box-shadow:var(--shadow-modal);z-index:60;opacity:0;pointer-events:none;transition:opacity .25s, transform .25s;white-space:nowrap;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(-6px);}
+.toast svg{width:16px;height:16px;color:var(--accent);}
+
+.empty-state{text-align:center;padding:40px 20px;color:var(--text-muted);}
+.empty-state svg{width:40px;height:40px;margin-bottom:10px;opacity:.5;}
+.empty-state p{font-size:13.5px;}
+
+.qr-box{background:#fff;border-radius:var(--radius-lg);padding:16px;display:flex;align-items:center;justify-content:center;margin-bottom:14px;}
+.contact-row{display:flex;gap:10px;margin-top:14px;}
+.contact-row .btn-primary,.contact-row .btn-secondary{flex:1;}
+
+/* ---- scout upgrades ---- */
+.notif-dot{position:absolute;top:7px;right:7px;width:8px;height:8px;background:var(--danger);border-radius:50%;border:1.5px solid var(--bg-base);}
+.gold-icon{color:var(--gold);}
+.hero-banner{background:linear-gradient(135deg,rgba(245,180,0,.16),rgba(34,197,94,.06));border:1px solid rgba(245,180,0,.22);border-radius:var(--radius-xl);padding:18px;margin-bottom:18px;position:relative;overflow:hidden;}
+.hero-banner h3{font-size:17px;margin-bottom:4px;}
+.hero-banner p{font-size:12.5px;color:var(--text-secondary);line-height:1.4;margin-bottom:12px;}
+.quick-actions{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:6px;}
+.qa-item{display:flex;flex-direction:column;align-items:center;gap:6px;background:var(--bg-surface);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:12px 6px;cursor:pointer;}
+.qa-item:active{background:var(--bg-overlay);}
+.qa-icon{width:34px;height:34px;border-radius:var(--radius-md);background:var(--bg-elevated);color:var(--accent);display:flex;align-items:center;justify-content:center;}
+.qa-icon svg{width:16px;height:16px;}
+.qa-item span{font-size:10.5px;font-weight:600;color:var(--text-secondary);text-align:center;line-height:1.2;}
+.reco-scroll{display:flex;gap:12px;overflow-x:auto;scrollbar-width:none;padding-bottom:4px;margin:0 -18px;padding-left:18px;padding-right:18px;}
+.reco-scroll::-webkit-scrollbar{display:none;}
+.reco-card{flex-shrink:0;width:132px;background:var(--bg-surface);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);overflow:hidden;cursor:pointer;}
+.reco-card img{width:100%;height:110px;object-fit:cover;}
+.reco-card .rc-body{padding:8px 10px;}
+.reco-card .rc-name{font-size:12.5px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.reco-card .rc-pos{font-size:10.5px;color:var(--text-muted);}
+.activity-item{display:flex;gap:10px;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--border-subtle);}
+.activity-item:last-child{border-bottom:none;}
+.activity-dot{width:8px;height:8px;border-radius:50%;background:var(--accent);margin-top:6px;flex-shrink:0;}
+.activity-text{font-size:13px;color:var(--text-secondary);line-height:1.4;}
+.activity-text strong{color:var(--text-primary);}
+.activity-time{font-size:11px;color:var(--text-muted);margin-top:1px;}
+
+.filter-row{display:flex;gap:8px;margin-bottom:12px;}
+.sort-select{flex:1;background:var(--bg-elevated);border:1px solid var(--border-default);border-radius:var(--radius-md);color:var(--text-primary);padding:11px 12px;font-size:13px;outline:none;font-family:inherit;}
+
+.compare-check{position:absolute;top:10px;left:10px;width:26px;height:26px;border-radius:50%;background:rgba(0,0,0,.5);border:2px solid rgba(255,255,255,.6);display:flex;align-items:center;justify-content:center;color:transparent;cursor:pointer;z-index:5;transition:all .15s;}
+.compare-check.checked{background:var(--accent);border-color:var(--accent);color:#03150a;}
+.compare-check svg{width:14px;height:14px;}
+.compare-bar{position:absolute;left:0;right:0;bottom:88px;padding:0 16px;z-index:25;display:none;}
+.compare-bar.show{display:block;}
+.compare-bar-inner{background:var(--bg-elevated);border:1px solid var(--border-default);border-radius:var(--radius-full);padding:8px 8px 8px 18px;display:flex;align-items:center;justify-content:space-between;box-shadow:var(--shadow-modal);font-size:12.5px;color:var(--text-secondary);}
+
+.vs-row{display:flex;align-items:center;gap:8px;margin-bottom:16px;}
+.vs-col{flex:1;text-align:center;}
+.vs-col img{width:64px;height:64px;border-radius:50%;object-fit:cover;margin:0 auto 6px;border:2px solid var(--border-default);}
+.vs-col p.vname{font-size:13px;font-weight:700;}
+.vs-mid{font-family:'Barlow Condensed';font-weight:800;font-size:15px;color:var(--text-muted);}
+.vs-stat-row{display:flex;align-items:center;padding:10px 0;border-bottom:1px solid var(--border-subtle);}
+.vs-stat-row:last-child{border-bottom:none;}
+.vs-val{flex:1;text-align:center;font-size:14px;font-weight:700;}
+.vs-val.win{color:var(--accent);}
+.vs-label{width:96px;text-align:center;font-size:10.5px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.3px;}
+
+.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border-subtle);}
+.toggle-row:last-child{border-bottom:none;}
+.toggle-row-text p:first-child{font-size:13.5px;font-weight:600;}
+.toggle-row-text p:last-child{font-size:11.5px;color:var(--text-muted);margin-top:1px;}
+.switch{position:relative;width:44px;height:26px;flex-shrink:0;}
+.switch input{opacity:0;width:0;height:0;}
+.switch-track{position:absolute;inset:0;background:var(--bg-elevated);border:1px solid var(--border-default);border-radius:var(--radius-full);cursor:pointer;transition:.2s;}
+.switch-track:before{content:'';position:absolute;width:18px;height:18px;left:3px;top:2.5px;background:var(--text-muted);border-radius:50%;transition:.2s;}
+.switch input:checked + .switch-track{background:rgba(34,197,94,.35);border-color:var(--accent);}
+.switch input:checked + .switch-track:before{transform:translateX(18px);background:var(--accent);}
+
+.notif-item{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--border-subtle);}
+.notif-item:last-child{border-bottom:none;}
+.notif-icon{width:36px;height:36px;border-radius:50%;background:var(--bg-elevated);color:var(--accent);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.notif-icon svg{width:16px;height:16px;}
+.notif-text{font-size:13px;line-height:1.4;}
+.notif-text strong{font-weight:700;}
+.notif-time{font-size:11px;color:var(--text-muted);margin-top:2px;}
+.range-row{display:flex;align-items:center;gap:10px;}
+.range-row input[type=number]{width:100%;}
+.star-input{display:flex;gap:6px;justify-content:center;margin:6px 0 4px;}
+.star-input svg{width:30px;height:30px;cursor:pointer;color:var(--border-default);transition:color .15s;}
+.star-input svg.on{color:var(--gold);}
+
+/* ---- boot / loading ---- */
+#screen-boot{align-items:center;justify-content:center;background:var(--bg-base);}
+#screen-boot .boot-inner{display:flex;flex-direction:column;align-items:center;gap:18px;}
+.boot-mark{width:64px;height:64px;border-radius:var(--radius-lg);background:linear-gradient(135deg,var(--accent),#0a3d1f);display:flex;align-items:center;justify-content:center;box-shadow:var(--shadow-glow);animation:pulseGlow 1.6s ease-in-out infinite;}
+@keyframes pulseGlow{0%,100%{box-shadow:0 0 24px var(--accent-glow);}50%{box-shadow:0 0 40px var(--accent-glow);}}
+.boot-bar{width:120px;height:3px;border-radius:var(--radius-full);background:var(--bg-elevated);overflow:hidden;}
+.boot-bar-fill{width:40%;height:100%;background:var(--accent);border-radius:var(--radius-full);animation:bootSlide 1.1s ease-in-out infinite;}
+@keyframes bootSlide{0%{transform:translateX(-100%);}100%{transform:translateX(340%);}}
+
+/* ---- page transition ---- */
+@keyframes fadeInUp{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
+.page-enter{animation:fadeInUp .32s cubic-bezier(.16,1,.3,1);}
+
+/* ---- field pattern texture ---- */
+.field-texture{background-image:repeating-linear-gradient(0deg,rgba(255,255,255,.025) 0 2px,transparent 2px 42px),radial-gradient(circle at 20% 0%, rgba(34,197,94,.10), transparent 45%), radial-gradient(circle at 90% 10%, rgba(245,180,0,.06), transparent 40%);}
+.gradient-text{background:linear-gradient(135deg,#fff 0%,var(--accent) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+
+/* ---- streak / gamification ---- */
+.streak-pill{display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,rgba(245,180,0,.18),rgba(245,180,0,.04));border:1px solid rgba(245,180,0,.3);color:var(--gold);padding:6px 12px;border-radius:var(--radius-full);font-size:12px;font-weight:700;}
+.streak-pill svg{width:14px;height:14px;}
+
+/* ---- checklist ---- */
+.checklist-item{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border-subtle);font-size:13px;}
+.checklist-item:last-child{border-bottom:none;}
+.checklist-dot{width:22px;height:22px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;border:1.5px solid var(--border-default);color:transparent;}
+.checklist-item.done .checklist-dot{background:var(--accent);border-color:var(--accent);color:#03150a;}
+.checklist-item.done span{color:var(--text-muted);text-decoration:line-through;}
+.checklist-dot svg{width:12px;height:12px;}
+
+/* ---- sparkline ---- */
+.sparkline-wrap{margin-top:6px;}
+
+/* ---- funnel ---- */
+.funnel-row{margin-bottom:12px;}
+.funnel-top{display:flex;justify-content:space-between;font-size:12px;color:var(--text-secondary);margin-bottom:5px;}
+.funnel-top strong{color:var(--text-primary);font-size:13px;}
+.funnel-track{height:10px;border-radius:var(--radius-full);background:var(--bg-elevated);overflow:hidden;}
+.funnel-fill{height:100%;border-radius:var(--radius-full);transition:width .5s ease;}
+
+/* ---- weekly calendar ---- */
+.week-toggle{display:flex;gap:6px;background:var(--bg-elevated);border-radius:var(--radius-full);padding:3px;margin-bottom:14px;}
+.week-toggle button{flex:1;border:none;background:none;color:var(--text-secondary);font-size:12.5px;font-weight:600;padding:8px 0;border-radius:var(--radius-full);cursor:pointer;}
+.week-toggle button.active{background:var(--accent);color:#03150a;}
+.week-strip{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px;}
+.week-strip::-webkit-scrollbar{display:none;}
+.week-day{flex-shrink:0;width:64px;background:var(--bg-elevated);border:1px solid var(--border-subtle);border-radius:var(--radius-md);padding:10px 6px;text-align:center;cursor:pointer;}
+.week-day.disponible{background:rgba(34,197,94,.16);border-color:rgba(34,197,94,.3);}
+.week-day.contratado{background:rgba(239,68,68,.16);border-color:rgba(239,68,68,.3);}
+.week-day .wd-dow{font-size:10px;color:var(--text-muted);text-transform:uppercase;font-weight:700;}
+.week-day .wd-num{font-size:17px;font-weight:800;margin:2px 0;}
+.week-day .wd-status{font-size:9.5px;color:var(--text-secondary);}
+.reminder-banner{display:flex;align-items:center;gap:10px;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.25);border-radius:var(--radius-lg);padding:12px 14px;margin-bottom:14px;color:#ffb3b3;font-size:12.5px;}
+.reminder-banner svg{width:18px;height:18px;flex-shrink:0;color:var(--danger);}
+
+/* ---- plan compare table ---- */
+.plan-view-toggle{display:flex;gap:6px;background:var(--bg-elevated);border-radius:var(--radius-full);padding:3px;margin-bottom:16px;}
+.plan-view-toggle button{flex:1;border:none;background:none;color:var(--text-secondary);font-size:12.5px;font-weight:600;padding:8px 0;border-radius:var(--radius-full);cursor:pointer;}
+.plan-view-toggle button.active{background:var(--accent);color:#03150a;}
+.plan-table-wrap{overflow-x:auto;margin:0 -18px;padding:0 18px 4px;scrollbar-width:none;}
+.plan-table-wrap::-webkit-scrollbar{display:none;}
+.plan-table{border-collapse:collapse;width:100%;min-width:560px;}
+.plan-table th,.plan-table td{padding:10px 12px;text-align:center;font-size:12px;border-bottom:1px solid var(--border-subtle);}
+.plan-table th{color:var(--text-secondary);font-weight:700;background:var(--bg-surface);position:sticky;top:0;}
+.plan-table td:first-child,.plan-table th:first-child{text-align:left;color:var(--text-secondary);}
+.plan-table td.pt-yes{color:var(--accent);}
+.plan-table .pt-price{font-weight:800;font-size:14px;color:var(--text-primary);}
+.plan-table th.pt-current{color:var(--accent);}
+.views-remaining{display:flex;align-items:center;gap:8px;background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.25);border-radius:var(--radius-md);padding:10px 12px;margin-top:10px;font-size:12.5px;color:var(--accent);font-weight:600;}
+
+/* ---- map mock ---- */
+.map-mock{position:relative;height:220px;border-radius:var(--radius-lg);overflow:hidden;background:linear-gradient(135deg,#0f1a12,#0a120d);border:1px solid var(--border-subtle);margin-bottom:14px;}
+.map-mock::before{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.04) 1px,transparent 1px);background-size:28px 28px;}
+.map-pin{position:absolute;transform:translate(-50%,-100%);cursor:pointer;display:flex;flex-direction:column;align-items:center;}
+.map-pin-dot{width:26px;height:26px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);background:var(--accent);display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,.5);border:2px solid #03150a;}
+.map-pin-dot svg{transform:rotate(45deg);width:12px;height:12px;color:#03150a;}
+.map-pin.verified .map-pin-dot{background:var(--gold);}
+.map-pin-label{margin-top:3px;font-size:9.5px;font-weight:700;color:#fff;background:rgba(0,0,0,.55);padding:1px 6px;border-radius:var(--radius-full);white-space:nowrap;}
+.map-toggle-btn{display:flex;align-items:center;gap:6px;}
+
+/* ---- saved searches ---- */
+.saved-search-row{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;margin-bottom:2px;}
+.saved-search-row::-webkit-scrollbar{display:none;}
+.saved-search-chip{flex-shrink:0;display:flex;align-items:center;gap:6px;background:var(--bg-elevated);border:1px solid var(--border-default);border-radius:var(--radius-full);padding:8px 8px 8px 14px;font-size:12.5px;font-weight:600;color:var(--text-secondary);cursor:pointer;white-space:nowrap;}
+.saved-search-chip button{background:none;border:none;color:var(--text-muted);display:flex;padding:2px;cursor:pointer;}
+.saved-search-chip button svg{width:13px;height:13px;}
+
+/* ---- alerts ---- */
+.alert-card{background:var(--bg-surface);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:14px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;gap:10px;}
+.alert-card p.al-title{font-size:13.5px;font-weight:700;}
+.alert-card p.al-sub{font-size:11.5px;color:var(--text-muted);margin-top:2px;}
+
+/* ---- video ordering / featured ---- */
+.video-thumb{position:relative;}
+.video-order-controls{position:absolute;top:6px;left:6px;display:flex;flex-direction:column;gap:3px;z-index:3;}
+.video-order-btn{width:22px;height:22px;background:rgba(0,0,0,.55);border:none;border-radius:50%;color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;}
+.video-order-btn svg{width:11px;height:11px;}
+.featured-star-btn{position:absolute;bottom:26px;right:6px;width:24px;height:24px;background:rgba(0,0,0,.55);border:none;border-radius:50%;color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:3;}
+.featured-star-btn.on{color:var(--gold);background:rgba(0,0,0,.7);}
+.featured-star-btn svg{width:13px;height:13px;}
+.featured-ribbon{position:absolute;top:6px;right:6px;background:var(--gold);color:#1c1300;font-size:9px;font-weight:800;padding:3px 7px;border-radius:var(--radius-full);z-index:3;display:flex;align-items:center;gap:3px;}
+.featured-ribbon svg{width:10px;height:10px;}
+.video-views-tag{font-size:9.5px;color:#d5e6da;}
+
+/* ---- tryout status ---- */
+.tryout-item{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 0;border-bottom:1px solid var(--border-subtle);}
+.tryout-item:last-child{border-bottom:none;}
+.tryout-item p.tr-name{font-size:13.5px;font-weight:700;}
+.tryout-item p.tr-meta{font-size:11.5px;color:var(--text-muted);margin-top:1px;}
+.status-chip{border:none;font-size:11px;font-weight:700;padding:6px 10px;border-radius:var(--radius-full);cursor:pointer;}
+.status-chip.pendiente{background:rgba(245,180,0,.15);color:var(--gold);}
+.status-chip.confirmada{background:rgba(56,189,248,.15);color:var(--info);}
+.status-chip.realizada{background:rgba(34,197,94,.15);color:var(--accent);}
+
+/* ---- notif unread ---- */
+.notif-item.unread{position:relative;}
+.notif-item.unread::after{content:'';position:absolute;left:-16px;top:16px;width:7px;height:7px;border-radius:50%;background:var(--info);}
+.notif-badge-count{position:absolute;top:5px;right:5px;min-width:16px;height:16px;padding:0 4px;background:var(--danger);border-radius:var(--radius-full);color:#fff;font-size:9.5px;font-weight:800;display:flex;align-items:center;justify-content:center;border:1.5px solid var(--bg-base);}
+</style>
+</head>
+<body>
+<div class="app-shell field-texture" id="app">
+
+  <!-- ===================== BOOT / LOADING ===================== -->
+  <div class="screen active" id="screen-boot">
+    <div class="boot-inner">
+      <div class="boot-mark">${ICON_BALL}</div>
+      <div class="boot-bar"><div class="boot-bar-fill"></div></div>
+    </div>
+  </div>
+
+  <!-- ===================== ONBOARDING ===================== -->
+  <div class="screen" id="screen-onboarding">
+    <div class="screen-content no-nav">
+      <div class="brand">
+        <div class="brand-mark">${ICON_BALL}</div>
+        <div class="brand-name">El Crack <span>del Barrio</span></div>
+      </div>
+      <h1 class="hero-title gradient-text">Del potrero a la <span class="accent">cancha grande</span></h1>
+      <p class="hero-sub">La vitrina donde los cracks de barrio muestran su nivel y los captadores encuentran a su próximo fichaje.</p>
+
+      <div class="role-card scout" onclick="goLogin('scout')">
+        <div class="role-icon">${ICON_SEARCH}</div>
+        <div>
+          <h3>Soy Captador / DT</h3>
+          <p>Quiero contratar o reclutar jugadores</p>
+        </div>
+        <div class="role-arrow">${ICON_CHEVRON}</div>
+      </div>
+
+      <div class="role-card" onclick="goLogin('player')">
+        <div class="role-icon">${ICON_JERSEY}</div>
+        <div>
+          <h3>Soy Jugador</h3>
+          <p>Quiero mostrar mi nivel y ser visto</p>
+        </div>
+        <div class="role-arrow">${ICON_CHEVRON}</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== LOGIN MOCK ===================== -->
+  <div class="screen" id="screen-login">
+    <div class="login-content">
+      <button class="back-mini" onclick="showScreen('screen-onboarding')">${ICON_BACK}</button>
+      <div class="login-badge" id="login-badge">Acceso Jugador</div>
+      <h1 style="font-size:26px;margin-bottom:6px;">Crea tu perfil</h1>
+      <p style="font-size:13px;color:var(--text-secondary);margin-bottom:22px;">Datos básicos para empezar (demo, no se envía a ningún servidor)</p>
+      <div class="field"><label>Nombre completo</label><input class="input-field" id="login-name" placeholder="Ej. Diego Fernández Ríos"></div>
+      <div class="field"><label>Celular / WhatsApp</label><input class="input-field" id="login-phone" placeholder="9xx xxx xxx"></div>
+      <div class="field" id="login-extra-field" style="display:none;">
+        <label>Club u organización</label><input class="input-field" id="login-club" placeholder="Ej. Academia Los Halcones">
+      </div>
+      <div style="margin-top:10px;">
+        <button class="btn-primary" id="login-btn" onclick="doLogin()">${ICON_ARROW} Ingresar a la app</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== PLAYER APP ===================== -->
+  <div class="screen" id="screen-player">
+    <header class="top-bar">
+      <div class="top-bar-inner">
+        <div>
+          <p class="greeting-sub">Bienvenido,</p>
+          <h1 class="greeting-name" id="p-greet-name">Jugador</h1>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <button class="icon-btn" onclick="logout()">${ICON_LOGOUT}</button>
+          <div class="avatar-wrap"><img class="avatar" id="p-avatar-top" src="https://i.pravatar.cc/100?img=13"><span class="avatar-badge"></span></div>
+        </div>
+      </div>
+    </header>
+    <main class="screen-content" id="p-view-home"></main>
+    <nav class="bottom-nav">
+      <button class="nav-item active" data-nav="p-home" onclick="playerNav('p-home')">${ICON_HOME}<span>Inicio</span></button>
+      <button class="nav-item" data-nav="p-profile" onclick="playerNav('p-profile')">${ICON_USER}<span>Perfil</span></button>
+      <button class="nav-item" data-nav="p-videos" onclick="playerNav('p-videos')">${ICON_VIDEO}<span>Videos</span></button>
+      <button class="nav-item" data-nav="p-calendar" onclick="playerNav('p-calendar')">${ICON_CAL}<span>Calendario</span></button>
+      <button class="nav-item" data-nav="p-plans" onclick="playerNav('p-plans')">${ICON_DOLLAR}<span>Plan</span></button>
+    </nav>
+  </div>
+
+  <!-- ===================== SCOUT APP ===================== -->
+  <div class="screen" id="screen-scout">
+    <header class="top-bar">
+      <div class="top-bar-inner">
+        <div>
+          <p class="greeting-sub">Panel de captación</p>
+          <h1 class="greeting-name" id="s-greet-name">Captador</h1>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <button class="icon-btn" onclick="openNotifications()">${ICON_BELL}<span class="notif-badge-count" id="notif-dot" style="display:none;">0</span></button>
+          <button class="icon-btn" onclick="logout()">${ICON_LOGOUT}</button>
+          <div class="avatar-wrap"><img class="avatar" id="s-avatar-top" src="https://i.pravatar.cc/100?img=53"><span class="avatar-badge"></span></div>
+        </div>
+      </div>
+    </header>
+    <main class="screen-content" id="s-view-home"></main>
+    <div class="compare-bar" id="compare-bar">
+      <div class="compare-bar-inner">
+        <span id="compare-count">0/2 seleccionados</span>
+        <div style="display:flex;gap:8px;">
+          <button class="btn-ghost" onclick="clearCompare()">Cancelar</button>
+          <button class="btn-primary" style="width:auto;padding:10px 18px;" id="compare-go-btn" onclick="openCompare()" disabled>${ICON_SLIDERS} Comparar</button>
+        </div>
+      </div>
+    </div>
+    <nav class="bottom-nav">
+      <button class="nav-item active" data-nav="s-home" onclick="scoutNav('s-home')">${ICON_HOME}<span>Inicio</span></button>
+      <button class="nav-item" data-nav="s-explore" onclick="scoutNav('s-explore')">${ICON_SEARCH}<span>Explorar</span></button>
+      <button class="nav-item" data-nav="s-fav" onclick="scoutNav('s-fav')">${ICON_HEART}<span>Favoritos</span></button>
+      <button class="nav-item" data-nav="s-profile" onclick="scoutNav('s-profile')">${ICON_USER}<span>Cuenta</span></button>
+    </nav>
+  </div>
+
+  <!-- overlay for sheets -->
+  <div class="overlay" id="overlay" onclick="if(event.target===this)closeSheet()">
+    <div class="sheet" id="sheet"></div>
+  </div>
+  <div class="toast" id="toast"></div>
+</div>
+
+<script>
+/* =============================== ICONS =============================== */
+const ICONS = {
+BALL:'<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#eafff0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7l4 3-1.5 4.5h-5L8 10z"/><path d="M12 3v4M4.5 8l3.5 2M19.5 8L16 10M6 18l2-3.5M18 18l-2-3.5"/></svg>',
+SEARCH:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>',
+JERSEY:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4l5 3 5-3 4 5-3 3v9H6v-9L3 9z"/></svg>',
+CHEVRON:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>',
+CHEVL:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>',
+BACK:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>',
+ARROW:'<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>',
+HOME:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/></svg>',
+USER:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>',
+VIDEO:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="14" height="12" rx="2"/><path d="M16 10l6-4v12l-6-4z"/></svg>',
+CAL:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>',
+DOLLAR:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v10M9.5 9.3c0-1.3 1.1-2.3 2.5-2.3s2.5.8 2.5 2c0 3-5 1.7-5 4.7 0 1.2 1.1 2.3 2.5 2.3s2.5-1 2.5-2.3"/></svg>',
+HEART:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7.5-4.9-10-9.4C.4 8 2 4.5 5.6 4a5 5 0 0 1 6.4 2 5 5 0 0 1 6.4-2c3.6.5 5.2 4 3.6 7.6C19.5 16.1 12 21 12 21z"/></svg>',
+LOGOUT:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5M21 12H9"/></svg>',
+PLAY:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>',
+STAR:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 17.8 6.1 21l1.2-6.5-4.8-4.6 6.6-.9z"/></svg>',
+TROPHY:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8M12 17v4M6 4h12v3a6 6 0 0 1-12 0z"/><path d="M6 5H3v2a4 4 0 0 0 3 4M18 5h3v2a4 4 0 0 1-3 4"/></svg>',
+PHONE:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h4l1.5 5-2.5 1.5a13 13 0 0 0 6.5 6.5L16 14.5l5 1.5v4a2 2 0 0 1-2.2 2A17 17 0 0 1 3 5.2 2 2 0 0 1 5 4z"/></svg>',
+PIN:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s7-6.4 7-12a7 7 0 1 0-14 0c0 5.6 7 12 7 12z"/><circle cx="12" cy="10" r="2.5"/></svg>',
+CHECK:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12l6 6 10-12"/></svg>',
+X:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6L6 18"/></svg>',
+CAMERA:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13.5" r="3.5"/></svg>',
+UPLOAD:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4M7 9l5-5 5 5"/><path d="M4 16v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/></svg>',
+IDCARD:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="8.5" cy="12" r="2"/><path d="M6 16.2c.6-1.3 1.6-2 2.5-2s1.9.7 2.5 2M14 9.5h5M14 13h5M14 16h3"/></svg>',
+CLOCK:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>',
+SHIELD:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6z"/></svg>',
+EYE:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>',
+EDIT:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>',
+PLUS:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>',
+SLIDERS:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h9M4 12h5M4 18h9"/><circle cx="17" cy="6" r="2"/><circle cx="12" cy="12" r="2" transform="translate(0,0)"/><circle cx="17" cy="18" r="2"/></svg>',
+TRASH:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></svg>',
+WHATSAPP:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.5 15.2L2 22l4.9-1.5A10 10 0 1 0 12 2zm5.3 14.3c-.2.6-1.3 1.2-1.9 1.3-.5.1-1.1.1-1.8-.1-.4-.1-1-.3-1.7-.6-3-1.3-5-4.3-5.1-4.5-.1-.2-1.2-1.6-1.2-3.1s.8-2.2 1-2.5c.3-.3.6-.4.8-.4h.6c.2 0 .5 0 .7.6.3.6.9 2.1 1 2.2.1.2.1.4 0 .6-.1.2-.2.4-.4.6-.2.2-.4.5-.6.6-.2.2-.4.4-.2.8.2.4.9 1.6 2 2.5 1.4 1.2 2.5 1.6 2.9 1.8.4.2.6.1.8-.1.2-.2.9-1 1.1-1.4.2-.4.4-.3.7-.2.3.1 2 .9 2.3 1.1.3.2.5.3.6.4.1.3.1.7-.1 1.3z"/></svg>',
+BELL:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 5 2 6 2 6H4s2-1 2-6z"/><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"/></svg>',
+CHART:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10M12 20V4M20 20v-7"/></svg>',
+BOOKMARK:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12v18l-6-4-6 4z"/></svg>',
+SHARE:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg>',
+BOLT:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 4 14h6l-1 8 9-12h-6z"/></svg>',
+CROWN:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 18h18M4 18l-1-9 5 4 4-7 4 7 5-4-1 9"/></svg>',
+BELLOFF:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 6-6M18 8c0 5 2 6 2 6H8m-4 0s1.3-.7 1.8-3M10.3 21a1.9 1.9 0 0 0 3.4 0M2 2l20 20"/></svg>',
+FLAME:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2c1 3-3 4-3 8a3 3 0 0 0 6 0c1 1 2 2.5 2 4.5A5.5 5.5 0 0 1 6 14.5C6 9 12 7 12 2z"/></svg>',
+ARROWUP:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>',
+ARROWDOWN:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M19 12l-7 7-7-7"/></svg>',
+MAP:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4L3 6v14l6-2 6 2 6-2V4l-6 2-6-2z"/><path d="M9 4v14M15 6v14"/></svg>',
+ALERT:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9L2.5 17a2 2 0 0 0 1.7 3h15.6a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg>',
+};
+function I(name){return ICONS[name];}
+function fillIcons(html){
+  return html.replace(/\$\{ICON_(\w+)\}/g,(m,n)=>I(n)||'');
+}
+
+/* =============================== STATE =============================== */
+const state = {
+  role:null,
+  userName:'',
+  userPhone:'',
+  club:'',
+  playerNav:'p-home',
+  scoutNav:'s-explore',
+  favorites:new Set(),
+  viewingPlayerId:null,
+  currentPlan:'free',
+  calMonth:new Date().getMonth(),
+  calYear:new Date().getFullYear(),
+  scoutPlan:'free',
+  viewedIds:new Set(),
+  contactedIds:new Set(),
+  tryouts:[],
+  notes:{},
+  compareSelection:[],
+  notifRead:false,
+  scoutArea:'',
+  streak:3,
+  lastCalendarUpdate:null,
+  calViewMode:'mes',
+  planViewMode:'cards',
+  exploreViewMode:'lista',
+  savedSearches:[],
+  alerts:[],
+  notifStatus:{},
+};
+const STORAGE_KEY='crack-del-barrio-state-v1';
+let storageReady=false;
+
+const myProfile = {
+  photo:'https://i.pravatar.cc/400?img=13',
+  dniUploaded:false,
+  dniPreview:null,
+  position:'Delantero',
+  secondaryPositions:['Extremo'],
+  age:19,
+  height:'1.76 m',
+  weight:'70 kg',
+  foot:'Derecho',
+  city:'Los Olivos, Lima',
+  bio:'Delantero rápido, buena definición dentro del área. Disponible para pretemporada.',
+  clubs:[
+    {club:'Academia Deportiva Halcones FC', liga:'Liga Distrital Los Olivos', logro:'Campeón 2024', tipo:'campeon'},
+    {club:'Selección Escolar SMP', liga:'Interescolar Lima Norte', logro:'Subcampeón 2023', tipo:'subcampeon'},
+    {club:'Real San Martín (base)', liga:'Copa Departamental Lima', logro:'Participación 2022', tipo:'participacion'},
+  ],
+  videos:[
+    {title:'Gol de tiro libre',thumb:'https://picsum.photos/seed/gol1/400/560',views:342,featured:true},
+    {title:'Mejores jugadas 2024',thumb:'https://picsum.photos/seed/gol2/400/560',views:198,featured:false},
+    {title:'Amistoso vs Halcones',thumb:'https://picsum.photos/seed/gol3/400/560',views:87,featured:false},
+  ],
+  calendar:{}, // 'YYYY-M-D': {status:'disponible'|'contratado'|'no', hourFrom, hourTo}
+};
+
+const PLANS = [
+  {id:'free',name:'Gratis',price:0,unit:'',desc:'Tu perfil visible en el listado general, sin prioridad.',feat:['Perfil público básico','Aparece en búsquedas normales','Sin límite de tiempo']},
+  {id:'basico',name:'Plan Inicial',price:2,unit:'/ 10 vistas',desc:'Tu perfil destacado hasta ante los primeros 10 captadores que exploren hoy.',feat:['Destacado para 10 vistas','Insignia "Nuevo talento"','Ideal para probar la plataforma']},
+  {id:'plus',name:'Plan Plus',price:4,unit:'/ 40 vistas',desc:'Mayor exposición: tu perfil aparece destacado para 40 captadores.',feat:['Destacado para 40 vistas','Aparece arriba en "Explorar"','Estadísticas de quién te vio']},
+  {id:'pro',name:'Plan Pro',price:6,unit:'/ 100 vistas',desc:'Máxima exposición puntual, ideal antes de un campeonato o prueba.',feat:['Destacado para 100 vistas','Prioridad sobre Plan Plus','Insignia dorada de verificado 7 días']},
+  {id:'mensual',name:'Suscripción Mensual',price:10,unit:'/ mes',desc:'Visibilidad ilimitada y prioridad total durante 30 días.',feat:['Vistas ilimitadas por 30 días','Siempre arriba en resultados','Badge Premium permanente','Estadísticas completas de contactos'],featured:true},
+];
+
+// mock roster for scouts
+const ROSTER = [
+  {id:1,name:'Diego Fernández',photo:'https://i.pravatar.cc/400?img=13',pos:'Delantero',age:19,city:'Los Olivos, Lima',verified:true,rating:4.8,phone:'987 654 321',clubs:myProfile.clubs,videos:myProfile.videos,bio:myProfile.bio,views:186},
+  {id:2,name:'Renzo Quispe',photo:'https://i.pravatar.cc/400?img=15',pos:'Volante',age:22,city:'Comas, Lima',verified:false,rating:4.5,phone:'998 111 222',clubs:[{club:'Deportivo Comas',liga:'Liga Distrital Comas',logro:'Campeón 2023',tipo:'campeon'}],videos:[{title:'Pases clave',thumb:'https://picsum.photos/seed/v2a/400/560'},{title:'Highlights temporada',thumb:'https://picsum.photos/seed/v2b/400/560'}],bio:'Volante creativo con buena visión de juego, más de 5 años de experiencia amateur.',views:94},
+  {id:3,name:'Marco Huamán',photo:'https://i.pravatar.cc/400?img=33',pos:'Defensa central',age:24,city:'San Martín de Porres, Lima',verified:true,rating:4.6,phone:'945 333 444',clubs:[{club:'Sport Chorrillos',liga:'Copa Departamental Lima',logro:'Campeón 2022',tipo:'campeon'},{club:'Alianza Barrio',liga:'Liga Vecinal',logro:'Subcampeón 2021',tipo:'subcampeon'}],videos:[{title:'Entradas y despejes',thumb:'https://picsum.photos/seed/v3a/400/560'}],bio:'Defensa fuerte en el juego aéreo, capitán de equipo distrital.',views:142},
+  {id:4,name:'Luis Torres',photo:'https://i.pravatar.cc/400?img=51',pos:'Arquero',age:21,city:'Independencia, Lima',verified:false,rating:4.3,phone:'912 555 666',clubs:[{club:'Club Independencia',liga:'Liga Distrital',logro:'Participación 2024',tipo:'participacion'}],videos:[{title:'Atajadas destacadas',thumb:'https://picsum.photos/seed/v4a/400/560'}],bio:'Arquero con buenos reflejos, juego con los pies desarrollado.',views:67},
+  {id:5,name:'Jean Rojas',photo:'https://i.pravatar.cc/400?img=59',pos:'Delantero',age:18,city:'Puente Piedra, Lima',verified:true,rating:4.9,phone:'933 777 888',clubs:[{club:'Academia Norte FC',liga:'Liga Distrital Puente Piedra',logro:'Campeón 2024',tipo:'campeon'},{club:'Selección Sub-18 Lima Norte',liga:'Interdistrital',logro:'Campeón 2023',tipo:'campeon'}],videos:[{title:'Hat-trick final',thumb:'https://picsum.photos/seed/v5a/400/560'},{title:'Regates y definición',thumb:'https://picsum.photos/seed/v5b/400/560'}],bio:'Delantero goleador, máximo artillero de su liga distrital dos años seguidos.',views:231},
+  {id:6,name:'Bryan Castillo',photo:'https://i.pravatar.cc/400?img=60',pos:'Lateral',age:23,city:'Carabayllo, Lima',verified:false,rating:4.2,phone:'921 222 333',clubs:[{club:'Carabayllo FC',liga:'Liga Distrital Carabayllo',logro:'Subcampeón 2023',tipo:'subcampeon'}],videos:[{title:'Recorridos por banda',thumb:'https://picsum.photos/seed/v6a/400/560'}],bio:'Lateral con buen recorrido y centros precisos.',views:58},
+];
+
+/* =============================== PERSISTENCIA (window.storage) =============================== */
+function serializeState(){
+  return {
+    v:1,
+    state:{
+      role:state.role,userName:state.userName,userPhone:state.userPhone,club:state.club,
+      playerNav:state.playerNav,scoutNav:state.scoutNav,
+      favorites:[...state.favorites],viewedIds:[...state.viewedIds],contactedIds:[...state.contactedIds],
+      currentPlan:state.currentPlan,scoutPlan:state.scoutPlan,
+      tryouts:state.tryouts,notes:state.notes,notifStatus:state.notifStatus,
+      streak:state.streak,lastCalendarUpdate:state.lastCalendarUpdate,
+      savedSearches:state.savedSearches,alerts:state.alerts,scoutArea:state.scoutArea,
+    },
+    myProfile,
+    roster:ROSTER.map(p=>({id:p.id,rating:p.rating,views:p.views})),
+  };
+}
+async function loadState(){
+  if(!window.storage){ storageReady=true; return; }
+  try{
+    const res=await window.storage.get(STORAGE_KEY);
+    if(res && res.value){
+      const data=JSON.parse(res.value);
+      if(data.state){
+        Object.assign(state,data.state);
+        state.favorites=new Set(data.state.favorites||[]);
+        state.viewedIds=new Set(data.state.viewedIds||[]);
+        state.contactedIds=new Set(data.state.contactedIds||[]);
+      }
+      if(data.myProfile) Object.assign(myProfile,data.myProfile);
+      if(data.roster) data.roster.forEach(r=>{const p=ROSTER.find(x=>x.id===r.id); if(p){p.rating=r.rating;p.views=r.views;}});
+    }
+  }catch(e){ /* sin progreso guardado aún */ }
+  storageReady=true;
+}
+let _saveTimer=null;
+function persist(){
+  if(!window.storage) return;
+  clearTimeout(_saveTimer);
+  _saveTimer=setTimeout(async()=>{
+    try{ await window.storage.set(STORAGE_KEY, JSON.stringify(serializeState())); }
+    catch(e){ console.error('No se pudo guardar el progreso',e); }
+  },350);
+}
+
+/* =============================== NAV HELPERS =============================== */
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  const el=document.getElementById(id);
+  el.classList.add('active','page-enter');
+  setTimeout(()=>el.classList.remove('page-enter'),350);
+}
+function toast(msg,icon='CHECK'){
+  const t=document.getElementById('toast');
+  t.innerHTML = (I(icon)||'') + '<span>'+msg+'</span>';
+  t.classList.add('show');
+  clearTimeout(window._toastTimer);
+  window._toastTimer=setTimeout(()=>t.classList.remove('show'),2200);
+  if(storageReady) persist();
+}
+function closeSheet(){document.getElementById('overlay').classList.remove('active');}
+function openSheet(html){
+  document.getElementById('sheet').innerHTML = fillIcons(html);
+  document.getElementById('overlay').classList.add('active');
+}
+
+function goLogin(role){
+  state.role = role;
+  document.getElementById('login-badge').textContent = role==='player' ? 'Acceso Jugador' : 'Acceso Captador / DT';
+  document.getElementById('login-badge').className = 'login-badge' + (role==='scout' ? ' gold':'');
+  document.getElementById('login-extra-field').style.display = role==='scout' ? 'block':'none';
+  const btn = document.getElementById('login-btn');
+  btn.className = 'btn-primary' + (role==='scout' ? ' gold':'');
+  showScreen('screen-login');
+}
+function doLogin(){
+  const name = document.getElementById('login-name').value.trim() || (state.role==='player'?'Jugador Demo':'Captador Demo');
+  state.userName = name;
+  state.userPhone = document.getElementById('login-phone').value.trim();
+  state.club = document.getElementById('login-club').value.trim();
+  if(state.role==='player'){
+    document.getElementById('p-greet-name').textContent = name.split(' ')[0];
+    showScreen('screen-player');
+    playerNav('p-home');
+    toast('¡Bienvenido a El Crack del Barrio!');
+  }else{
+    document.getElementById('s-greet-name').textContent = name.split(' ')[0];
+    showScreen('screen-scout');
+    scoutNav('s-home');
+    toast('¡Bienvenido a El Crack del Barrio!');
+  }
+}
+function logout(){
+  state.role=null; state.userName=''; state.userPhone=''; state.club='';
+  showScreen('screen-onboarding');
+  toast('Sesión cerrada');
+}
+
+/* =============================== PLAYER: HOME =============================== */
+function completionPct(){
+  let n=0,total=6;
+  if(myProfile.photo) n++;
+  if(myProfile.dniUploaded) n++;
+  if(myProfile.bio && myProfile.bio.length>10) n++;
+  if(myProfile.clubs.length>0) n++;
+  if(myProfile.videos.length>0) n++;
+  if(Object.keys(myProfile.calendar).length>0) n++;
+  return Math.round(n/total*100);
+}
+
+const VIEWS_HISTORY=[14,19,17,26,22,31,28]; // últimos 7 días (mock, determinístico)
+function sparklineSVG(data,color){
+  const w=280,h=48,pad=4;
+  const max=Math.max(...data),min=Math.min(...data);
+  const range=(max-min)||1;
+  const step=(w-pad*2)/(data.length-1);
+  const pts=data.map((v,i)=>[pad+i*step, h-pad-((v-min)/range)*(h-pad*2)]);
+  const line=pts.map(p=>p.join(',')).join(' ');
+  const area=`${pad},${h-pad} `+line+` ${w-pad},${h-pad}`;
+  return `<svg viewBox="0 0 ${w} ${h}" width="100%" height="${h}" preserveAspectRatio="none">
+    <polygon points="${area}" fill="${color}" opacity="0.12"></polygon>
+    <polyline points="${line}" fill="none" stroke="${color}" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"></polyline>
+    ${pts.map(p=>`<circle cx="${p[0]}" cy="${p[1]}" r="2.6" fill="${color}"></circle>`).join('')}
+  </svg>`;
+}
+function playerChecklist(){
+  return [
+    {done:!!myProfile.photo,label:'Sube una foto de perfil clara'},
+    {done:myProfile.dniUploaded,label:'Verifica tu identidad con tu DNI'},
+    {done:myProfile.bio && myProfile.bio.length>10,label:'Escribe una bio corta sobre tu juego'},
+    {done:myProfile.clubs.length>0,label:'Añade al menos un club o campeonato'},
+    {done:myProfile.videos.length>0,label:'Sube un video de tus mejores jugadas'},
+    {done:Object.keys(myProfile.calendar).length>0,label:'Marca tu disponibilidad en el calendario'},
+  ];
+}
+function renderPlayerHome(){
+  const pct = completionPct();
+  const plan = PLANS.find(p=>p.id===state.currentPlan);
+  const pending = playerChecklist().filter(c=>!c.done);
+  document.getElementById('p-view-home').innerHTML = fillIcons(`
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+      <span class="streak-pill">\${ICON_FLAME} ${state.streak} días activo</span>
+      ${myProfile.dniUploaded?'<span class="badge-success">\${ICON_SHIELD} Verificado</span>':''}
+    </div>
+    <div class="completion-card">
+      <div class="completion-top"><strong>Perfil completo</strong><span>${pct}%</span></div>
+      <div class="progress-track"><div class="progress-fill" style="width:${pct}%"></div></div>
+    </div>
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon success">\${ICON_EYE}</div>
+        <p class="stat-value">${VIEWS_HISTORY.reduce((a,b)=>a+b,0)}</p><p class="stat-label">Vistas (7 días)</p>
+        <div class="sparkline-wrap">${sparklineSVG(VIEWS_HISTORY,'#22c55e')}</div>
+      </div>
+      <div class="stat-card"><div class="stat-icon gold">\${ICON_STAR}</div><p class="stat-value">4.8</p><p class="stat-label">Calificación</p></div>
+      <div class="stat-card"><div class="stat-icon info">\${ICON_VIDEO}</div><p class="stat-value">${myProfile.videos.length}</p><p class="stat-label">Videos subidos</p></div>
+      <div class="stat-card"><div class="stat-icon danger">\${ICON_PHONE}</div><p class="stat-value">6</p><p class="stat-label">Contactos recibidos</p></div>
+    </div>
+
+    <div class="section-label">Tu plan actual</div>
+    <div class="card" style="display:flex;justify-content:space-between;align-items:center;">
+      <div>
+        <p style="font-weight:700;font-size:15px;">${plan.name}</p>
+        <p style="font-size:12px;color:var(--text-secondary);margin-top:2px;">${plan.id==='free'?'Sin destacar — mejora tu visibilidad':'Activo · '+plan.desc}</p>
+      </div>
+      <button class="btn-ghost" onclick="playerNav('p-plans')">Mejorar</button>
+    </div>
+
+    ${pending.length>0?`
+    <div class="section-label">Completa tu perfil (${pending.length} pendiente${pending.length>1?'s':''})</div>
+    <div class="card">
+      ${playerChecklist().map(c=>`
+        <div class="checklist-item ${c.done?'done':''}">
+          <div class="checklist-dot">\${ICON_CHECK}</div>
+          <span>${c.label}</span>
+        </div>
+      `).join('')}
+      <button class="btn-secondary" style="margin-top:12px;" onclick="playerNav('p-profile')">Completar ahora</button>
+    </div>
+    `:`
+    <div class="section-label">Accesos rápidos</div>
+    <div class="card" style="padding:0;">
+      <div class="list-row" onclick="playerNav('p-videos')" style="display:flex;align-items:center;gap:12px;padding:14px 16px;cursor:pointer;border-bottom:1px solid var(--border-subtle);">
+        <div class="info-row-icon">\${ICON_VIDEO}</div>
+        <div style="flex:1;"><p style="font-size:14px;font-weight:600;">Subir jugadas destacadas</p><p style="font-size:12px;color:var(--text-muted);">Videos de tus mejores momentos</p></div>
+        \${ICON_CHEVRON}
+      </div>
+      <div class="list-row" onclick="playerNav('p-calendar')" style="display:flex;align-items:center;gap:12px;padding:14px 16px;cursor:pointer;">
+        <div class="info-row-icon">\${ICON_CAL}</div>
+        <div style="flex:1;"><p style="font-size:14px;font-weight:600;">Actualizar disponibilidad</p><p style="font-size:12px;color:var(--text-muted);">Marca días libres y contratados</p></div>
+        \${ICON_CHEVRON}
+      </div>
+    </div>
+    `}
+  `);
+}
+
+/* =============================== PLAYER: PROFILE (edit) =============================== */
+function renderPlayerProfile(){
+  document.getElementById('p-view-home').innerHTML = fillIcons(`
+    <div style="text-align:center;margin-bottom:18px;">
+      <div style="position:relative;width:104px;height:104px;margin:0 auto 10px;">
+        <img id="p-photo-preview" src="${myProfile.photo}" style="width:104px;height:104px;border-radius:50%;object-fit:cover;border:3px solid var(--accent);">
+        <button onclick="document.getElementById('photo-input').click()" style="position:absolute;bottom:0;right:0;width:32px;height:32px;border-radius:50%;background:var(--accent);border:2px solid var(--bg-base);display:flex;align-items:center;justify-content:center;color:#03150a;">\${ICON_CAMERA}</button>
+        <input type="file" id="photo-input" accept="image/*" style="display:none;" onchange="handlePhotoUpload(event)">
+      </div>
+      <h2 style="font-size:19px;">${state.userName || 'Diego Fernández'}</h2>
+      <p style="font-size:12.5px;color:var(--text-secondary);">${myProfile.position} · ${myProfile.city}</p>
+    </div>
+
+    <div class="section-label">Verificación DNI</div>
+    <div class="card">
+      ${myProfile.dniUploaded ? `
+        <div style="display:flex;align-items:center;gap:12px;">
+          <img src="${myProfile.dniPreview}" style="width:64px;height:44px;object-fit:cover;border-radius:var(--radius-sm);border:1px solid var(--border-default);">
+          <div style="flex:1;"><p style="font-size:13.5px;font-weight:600;">DNI cargado</p><p style="font-size:11.5px;color:var(--text-muted);">Solo visible para verificación, no se muestra público</p></div>
+          <span class="badge-success">\${ICON_CHECK} Listo</span>
+        </div>
+      ` : `
+        <div class="upload-box" onclick="document.getElementById('dni-input').click()">
+          \${ICON_IDCARD}
+          <span>Subir foto de tu DNI</span>
+          <small>Solo para verificar tu identidad · privado</small>
+        </div>
+        <input type="file" id="dni-input" accept="image/*" style="display:none;" onchange="handleDniUpload(event)">
+      `}
+    </div>
+
+    <div class="section-label">Datos personales</div>
+    <div class="card">
+      <div class="field"><label>Posición principal</label>
+        <select class="input-field" id="f-pos" onchange="myProfile.position=this.value">
+          ${['Arquero','Defensa central','Lateral','Volante','Extremo','Delantero'].map(p=>`<option ${p===myProfile.position?'selected':''}>${p}</option>`).join('')}
+        </select>
+      </div>
+      <div class="field">
+        <label>Posiciones secundarias</label>
+        <div class="tab-row" style="margin-top:0;">
+          ${['Arquero','Defensa central','Lateral','Volante','Extremo','Delantero'].filter(p=>p!==myProfile.position).map(p=>`<div class="tab-chip ${myProfile.secondaryPositions.includes(p)?'active':''}" onclick="toggleSecondaryPos('${p}')">${p}</div>`).join('')}
+        </div>
+      </div>
+      <div style="display:flex;gap:10px;">
+        <div class="field" style="flex:1;"><label>Edad</label><input class="input-field" type="number" value="${myProfile.age}" oninput="myProfile.age=this.value"></div>
+        <div class="field" style="flex:1;"><label>Pie hábil</label>
+          <select class="input-field" onchange="myProfile.foot=this.value">
+            ${['Derecho','Izquierdo','Ambidiestro'].map(p=>`<option ${p===myProfile.foot?'selected':''}>${p}</option>`).join('')}
+          </select>
+        </div>
+      </div>
+      <div style="display:flex;gap:10px;">
+        <div class="field" style="flex:1;"><label>Altura</label><input class="input-field" value="${myProfile.height}" oninput="myProfile.height=this.value"></div>
+        <div class="field" style="flex:1;"><label>Peso</label><input class="input-field" value="${myProfile.weight}" oninput="myProfile.weight=this.value"></div>
+      </div>
+      <div class="field"><label>Distrito / Ciudad</label><input class="input-field" value="${myProfile.city}" oninput="myProfile.city=this.value"></div>
+      <div class="field"><label>Celular de contacto</label><input class="input-field" value="${state.userPhone||''}" oninput="state.userPhone=this.value"></div>
+      <div class="field" style="margin-bottom:0;"><label>Sobre ti (bio corta)</label><textarea class="input-field" oninput="myProfile.bio=this.value">${myProfile.bio}</textarea></div>
+    </div>
+
+    <div class="section-label">Ligas, clubes y campeonatos</div>
+    <div class="card" id="clubs-card">
+      ${renderClubsList()}
+      <button class="btn-secondary" style="margin-top:4px;" onclick="openAddClub()">\${ICON_PLUS} Añadir experiencia</button>
+    </div>
+
+    <button class="btn-primary" style="margin-top:6px;" onclick="saveProfile()">\${ICON_CHECK} Guardar cambios</button>
+  `);
+}
+function renderClubsList(){
+  if(myProfile.clubs.length===0) return `<p style="font-size:12.5px;color:var(--text-muted);margin-bottom:10px;">Aún no agregaste clubes ni campeonatos.</p>`;
+  return myProfile.clubs.map((c,i)=>fillIcons(`
+    <div class="club-item">
+      <div class="club-icon">\${ICON_TROPHY}</div>
+      <div style="flex:1;">
+        <p class="club-name">${c.club}</p>
+        <p class="club-detail">${c.liga}</p>
+        <span class="club-badge ${c.tipo==='campeon'?'badge-gold':c.tipo==='subcampeon'?'badge-success':'badge-muted'}">${c.logro}</span>
+      </div>
+      <button class="icon-btn" style="width:32px;height:32px;" onclick="removeClub(${i})">\${ICON_TRASH}</button>
+    </div>
+  `)).join('');
+}
+function removeClub(i){ myProfile.clubs.splice(i,1); renderPlayerProfile(); toast('Experiencia eliminada','CHECK'); }
+function openAddClub(){
+  openSheet(`
+    <div class="sheet-handle"></div>
+    <h3 class="sheet-title">Añadir club / campeonato</h3>
+    <p class="sheet-sub">Cuéntale a los captadores dónde jugaste</p>
+    <div class="field"><label>Club / Academia / Selección</label><input class="input-field" id="nc-club" placeholder="Ej. Deportivo Norte FC"></div>
+    <div class="field"><label>Liga o campeonato</label><input class="input-field" id="nc-liga" placeholder="Ej. Liga Distrital Comas"></div>
+    <div class="field"><label>Resultado</label>
+      <select class="input-field" id="nc-tipo">
+        <option value="campeon">Campeón</option>
+        <option value="subcampeon">Subcampeón</option>
+        <option value="participacion">Participación</option>
+      </select>
+    </div>
+    <div class="field"><label>Detalle / año</label><input class="input-field" id="nc-logro" placeholder="Ej. Campeón 2024"></div>
+    <button class="btn-primary" onclick="addClub()">\${ICON_CHECK} Guardar</button>
+  `);
+}
+function addClub(){
+  const club=document.getElementById('nc-club').value.trim();
+  const liga=document.getElementById('nc-liga').value.trim();
+  const tipo=document.getElementById('nc-tipo').value;
+  const logro=document.getElementById('nc-logro').value.trim() || (tipo==='campeon'?'Campeón':tipo==='subcampeon'?'Subcampeón':'Participación');
+  if(!club||!liga){toast('Completa club y liga','X');return;}
+  myProfile.clubs.push({club,liga,logro,tipo});
+  closeSheet();
+  renderPlayerProfile();
+  toast('Experiencia añadida');
+}
+function toggleSecondaryPos(p){
+  const i=myProfile.secondaryPositions.indexOf(p);
+  if(i>-1) myProfile.secondaryPositions.splice(i,1);
+  else{
+    if(myProfile.secondaryPositions.length>=2){ toast('Máximo 2 posiciones secundarias','X'); return; }
+    myProfile.secondaryPositions.push(p);
+  }
+  renderPlayerProfile();
+}
+function saveProfile(){
+  const errors=[];
+  if(!myProfile.bio || myProfile.bio.trim().length<10) errors.push('Escribe una bio de al menos 10 caracteres');
+  if(state.userPhone && !/^[0-9\s+]{6,15}$/.test(state.userPhone)) errors.push('Revisa el formato de tu celular');
+  if(!myProfile.city || myProfile.city.trim().length<2) errors.push('Indica tu distrito o ciudad');
+  if(errors.length){ toast(errors[0],'X'); return; }
+  toast('Perfil guardado correctamente');
+  renderPlayerHome();
+}
+
+function handlePhotoUpload(e){
+  const file=e.target.files[0]; if(!file) return;
+  const reader=new FileReader();
+  reader.onload=ev=>{ myProfile.photo=ev.target.result; document.getElementById('p-photo-preview').src=ev.target.result; document.getElementById('p-avatar-top').src=ev.target.result; toast('Foto actualizada'); };
+  reader.readAsDataURL(file);
+}
+function handleDniUpload(e){
+  const file=e.target.files[0]; if(!file) return;
+  const reader=new FileReader();
+  reader.onload=ev=>{ myProfile.dniUploaded=true; myProfile.dniPreview=ev.target.result; renderPlayerProfile(); toast('DNI subido para verificación'); };
+  reader.readAsDataURL(file);
+}
+
+/* =============================== PLAYER: VIDEOS =============================== */
+function renderPlayerVideos(){
+  document.getElementById('p-view-home').innerHTML = fillIcons(`
+    <div class="upload-box" onclick="document.getElementById('video-input').click()" style="margin-bottom:16px;">
+      \${ICON_UPLOAD}
+      <span>Subir video de tus mejores jugadas</span>
+      <small>MP4 recomendado · máx. 60 seg</small>
+    </div>
+    <input type="file" id="video-input" accept="image/*,video/*" style="display:none;" onchange="handleVideoUpload(event)">
+    <div class="section-label">Tus videos (${myProfile.videos.length})</div>
+    <div class="video-grid" id="video-grid">${renderVideoGrid(myProfile.videos,true)}</div>
+  `);
+}
+function renderVideoGrid(list,editable){
+  if(list.length===0) return fillIcons(`<div class="empty-state">\${ICON_VIDEO}<p>Aún no hay videos subidos</p></div>`);
+  const ordered = editable ? list : [...list].sort((a,b)=>(b.featured?1:0)-(a.featured?1:0));
+  return ordered.map((v,i)=>fillIcons(`
+    <div class="video-thumb" onclick="playVideo('${v.title.replace(/'/g,"")}',${i},${editable?"'own'":("'other:"+(state.viewingPlayerId||0)+"'")})">
+      <img src="${v.thumb}">
+      <div class="video-thumb-grad"></div>
+      <div class="video-play">\${ICON_PLAY}</div>
+      <p class="video-cap">${v.title}</p>
+      <p class="video-cap video-views-tag" style="bottom:24px;">\${ICON_EYE} ${v.views||0}</p>
+      ${v.featured?`<div class="featured-ribbon">\${ICON_STAR} Portada</div>`:''}
+      ${editable?`
+        <div class="video-order-controls">
+          <button class="video-order-btn" onclick="event.stopPropagation();moveVideo(${i},-1)">\${ICON_ARROWUP}</button>
+          <button class="video-order-btn" onclick="event.stopPropagation();moveVideo(${i},1)">\${ICON_ARROWDOWN}</button>
+        </div>
+        <button class="featured-star-btn ${v.featured?'on':''}" onclick="event.stopPropagation();toggleFeaturedVideo(${i})">\${ICON_STAR}</button>
+        <button onclick="event.stopPropagation();removeVideo(${i})" style="position:absolute;top:6px;right:6px;width:22px;height:22px;background:rgba(0,0,0,.55);border-radius:50%;border:none;color:#fff;display:flex;align-items:center;justify-content:center;z-index:3;">\${ICON_X}</button>
+      `:''}
+    </div>
+  `)).join('');
+}
+function removeVideo(i){ myProfile.videos.splice(i,1); renderPlayerVideos(); toast('Video eliminado'); }
+function moveVideo(i,dir){
+  const j=i+dir;
+  if(j<0||j>=myProfile.videos.length) return;
+  [myProfile.videos[i],myProfile.videos[j]]=[myProfile.videos[j],myProfile.videos[i]];
+  renderPlayerVideos();
+  persist();
+}
+function toggleFeaturedVideo(i){
+  myProfile.videos.forEach((v,idx)=>v.featured = idx===i ? !v.featured : false);
+  renderPlayerVideos();
+  toast(myProfile.videos[i].featured?'Video marcado como portada':'Portada quitada');
+}
+function handleVideoUpload(e){
+  const file=e.target.files[0]; if(!file) return;
+  const reader=new FileReader();
+  reader.onload=ev=>{
+    myProfile.videos.push({title:'Jugada destacada '+(myProfile.videos.length+1), thumb:ev.target.result});
+    renderPlayerVideos();
+    toast('Video subido con éxito');
+  };
+  reader.readAsDataURL(file);
+}
+function playVideo(title,idx,src){
+  if(src==='own' && myProfile.videos[idx]){ myProfile.videos[idx].views=(myProfile.videos[idx].views||0)+1; }
+  else if(src && src.startsWith('other:')){
+    const pid=Number(src.split(':')[1]);
+    const p=ROSTER.find(r=>r.id===pid);
+    if(p && p.videos[idx]) p.videos[idx].views=(p.videos[idx].views||0)+1;
+  }
+  toast('Reproduciendo: '+title,'CHECK');
+}
+
+/* =============================== PLAYER: CALENDAR =============================== */
+const DOWS=['D','L','M','M','J','V','S'];
+const MONTHS=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+function calKey(y,m,d){return y+'-'+m+'-'+d;}
+function daysSinceUpdate(){
+  if(!state.lastCalendarUpdate) return null;
+  return Math.floor((Date.now()-state.lastCalendarUpdate)/86400000);
+}
+function reminderBannerHtml(){
+  const d=daysSinceUpdate();
+  if(d===null || d<5) return '';
+  return fillIcons(`<div class="reminder-banner">\${ICON_ALERT}<span>Llevas ${d} días sin actualizar tu disponibilidad. Los captadores prefieren jugadores con calendario al día.</span></div>`);
+}
+function renderPlayerCalendar(){
+  document.getElementById('p-view-home').innerHTML = fillIcons(`
+    <div class="week-toggle">
+      <button class="${state.calViewMode==='mes'?'active':''}" onclick="setCalView('mes')">Mes</button>
+      <button class="${state.calViewMode==='semana'?'active':''}" onclick="setCalView('semana')">Semana</button>
+    </div>
+    ${reminderBannerHtml()}
+    <div id="cal-body"></div>
+  `);
+  if(state.calViewMode==='semana') renderCalendarWeekBody(); else renderCalendarMonthBody();
+}
+function setCalView(mode){ state.calViewMode=mode; renderPlayerCalendar(); }
+function renderCalendarMonthBody(){
+  const y=state.calYear,m=state.calMonth;
+  const first=new Date(y,m,1).getDay();
+  const days=new Date(y,m+1,0).getDate();
+  const today=new Date();
+  let cells='';
+  for(let i=0;i<first;i++) cells+='<div class="cal-day empty"></div>';
+  for(let d=1;d<=days;d++){
+    const key=calKey(y,m,d);
+    const entry=myProfile.calendar[key];
+    const status=entry?entry.status:'';
+    const isToday = today.getFullYear()===y && today.getMonth()===m && today.getDate()===d;
+    cells+=`<div class="cal-day ${status} ${isToday?'today':''}" onclick="openDayEditor(${d})">${d}</div>`;
+  }
+  document.getElementById('cal-body').innerHTML = fillIcons(`
+    <div class="card">
+      <div class="cal-nav">
+        <button class="icon-btn" onclick="calShift(-1)">\${ICON_CHEVL}</button>
+        <strong>${MONTHS[m]} ${y}</strong>
+        <button class="icon-btn" onclick="calShift(1)">\${ICON_CHEVRON}</button>
+      </div>
+      <div class="cal-grid">${DOWS.map(d=>`<div class="cal-dow">${d}</div>`).join('')}${cells}</div>
+      <div class="legend">
+        <div class="legend-item"><span class="legend-dot" style="background:var(--accent);"></span>Disponible</div>
+        <div class="legend-item"><span class="legend-dot" style="background:var(--danger);"></span>Contratado</div>
+        <div class="legend-item"><span class="legend-dot" style="background:var(--text-muted);"></span>No disponible</div>
+      </div>
+    </div>
+    <p style="font-size:12px;color:var(--text-secondary);text-align:center;margin-top:8px;">Toca un día para marcar tu disponibilidad y horario</p>
+  `);
+}
+function renderCalendarWeekBody(){
+  const today=new Date();
+  const startOfWeek=new Date(today); startOfWeek.setDate(today.getDate()-today.getDay());
+  let strip='';
+  for(let i=0;i<7;i++){
+    const d=new Date(startOfWeek); d.setDate(startOfWeek.getDate()+i);
+    const key=calKey(d.getFullYear(),d.getMonth(),d.getDate());
+    const entry=myProfile.calendar[key];
+    const status=entry?entry.status:'';
+    strip+=`<div class="week-day ${status}" onclick="openDayEditorDate(${d.getFullYear()},${d.getMonth()},${d.getDate()})">
+      <p class="wd-dow">${DOWS[d.getDay()]}</p>
+      <p class="wd-num">${d.getDate()}</p>
+      <p class="wd-status">${status==='disponible'?'Libre':status==='contratado'?'Ocupado':status==='no'?'No':'—'}</p>
+    </div>`;
+  }
+  document.getElementById('cal-body').innerHTML = fillIcons(`
+    <div class="card">
+      <p style="font-size:13px;font-weight:700;margin-bottom:10px;">Esta semana</p>
+      <div class="week-strip">${strip}</div>
+      <div class="legend" style="margin-top:14px;">
+        <div class="legend-item"><span class="legend-dot" style="background:var(--accent);"></span>Disponible</div>
+        <div class="legend-item"><span class="legend-dot" style="background:var(--danger);"></span>Contratado</div>
+        <div class="legend-item"><span class="legend-dot" style="background:var(--text-muted);"></span>No disponible</div>
+      </div>
+    </div>
+    <p style="font-size:12px;color:var(--text-secondary);text-align:center;margin-top:8px;">Toca un día de esta semana para actualizarlo rápido</p>
+  `);
+}
+function openDayEditorDate(y,m,d){
+  state.calYear=y; state.calMonth=m;
+  openDayEditor(d);
+}
+function calShift(dir){
+  state.calMonth+=dir;
+  if(state.calMonth<0){state.calMonth=11;state.calYear--;}
+  if(state.calMonth>11){state.calMonth=0;state.calYear++;}
+  renderPlayerCalendar();
+}
+function openDayEditor(d){
+  const key=calKey(state.calYear,state.calMonth,d);
+  const entry=myProfile.calendar[key]||{status:'disponible',from:'18:00',to:'20:00'};
+  openSheet(`
+    <div class="sheet-handle"></div>
+    <h3 class="sheet-title">${d} de ${MONTHS[state.calMonth]}</h3>
+    <p class="sheet-sub">Define tu disponibilidad para este día</p>
+    <div class="field"><label>Estado</label>
+      <select class="input-field" id="day-status">
+        <option value="disponible" ${entry.status==='disponible'?'selected':''}>Disponible</option>
+        <option value="contratado" ${entry.status==='contratado'?'selected':''}>Contratado</option>
+        <option value="no" ${entry.status==='no'?'selected':''}>No disponible</option>
+      </select>
+    </div>
+    <div style="display:flex;gap:10px;">
+      <div class="field" style="flex:1;"><label>Desde</label><input class="input-field" type="time" id="day-from" value="${entry.from}"></div>
+      <div class="field" style="flex:1;"><label>Hasta</label><input class="input-field" type="time" id="day-to" value="${entry.to}"></div>
+    </div>
+    <button class="btn-primary" onclick="saveDay(${d})">\${ICON_CHECK} Guardar día</button>
+    <button class="btn-ghost" style="width:100%;margin-top:4px;" onclick="clearDay(${d})">Quitar marca de este día</button>
+  `);
+}
+function saveDay(d){
+  const key=calKey(state.calYear,state.calMonth,d);
+  myProfile.calendar[key]={status:document.getElementById('day-status').value,from:document.getElementById('day-from').value,to:document.getElementById('day-to').value};
+  state.lastCalendarUpdate=Date.now();
+  closeSheet(); renderPlayerCalendar(); toast('Disponibilidad actualizada');
+}
+function clearDay(d){
+  const key=calKey(state.calYear,state.calMonth,d);
+  delete myProfile.calendar[key];
+  state.lastCalendarUpdate=Date.now();
+  closeSheet(); renderPlayerCalendar(); toast('Marca eliminada');
+}
+
+/* =============================== PLAYER: PLANS =============================== */
+function setPlanView(mode){ state.planViewMode=mode; renderPlayerPlans(); }
+function renderPlayerPlans(){
+  const currentP = PLANS.find(p=>p.id===state.currentPlan);
+  const remainingHtml = (currentP && currentP.unit.includes('vistas')) ? fillIcons(`
+    <div class="views-remaining">\${ICON_EYE}<span>Te quedan ~${Math.max(0,parseInt(currentP.unit.match(/\d+/)[0])-Math.floor(Math.random()*8))} vistas destacadas de tu plan actual</span></div>
+  `) : '';
+  document.getElementById('p-view-home').innerHTML = fillIcons(`
+    <p style="font-size:13px;color:var(--text-secondary);margin-bottom:12px;">Elige un plan para que más captadores vean tu perfil primero. Pagos simulados vía Yape / Plin.</p>
+    ${remainingHtml}
+    <div class="plan-view-toggle" style="margin-top:${remainingHtml?'12px':'0'};">
+      <button class="${state.planViewMode==='cards'?'active':''}" onclick="setPlanView('cards')">Tarjetas</button>
+      <button class="${state.planViewMode==='table'?'active':''}" onclick="setPlanView('table')">Comparar tabla</button>
+    </div>
+    <div id="plans-body"></div>
+  `);
+  if(state.planViewMode==='table') renderPlansTable(); else renderPlansCards();
+}
+function renderPlansCards(){
+  document.getElementById('plans-body').innerHTML = fillIcons(PLANS.map(p=>`
+    <div class="plan-card ${state.currentPlan===p.id?'current':''} ${p.featured?'featured':''}">
+      ${p.featured?'<div class="plan-ribbon">MEJOR VALOR</div>':''}
+      <div class="plan-top">
+        <div><p class="plan-name">${p.name}</p></div>
+        ${state.currentPlan===p.id?'<span class="badge-success">Activo</span>':''}
+      </div>
+      <p class="plan-price">S/ ${p.price}<small> ${p.unit}</small></p>
+      <p class="plan-desc">${p.desc}</p>
+      ${p.feat.map(f=>`<div class="plan-feat">\${ICON_CHECK}<span>${f}</span></div>`).join('')}
+      <button class="btn-${p.featured?'primary gold':'primary'}" style="margin-top:12px;${p.id==='free'?'display:none;':''}" onclick="startPayment('${p.id}')" ${state.currentPlan===p.id?'disabled style="opacity:.5;margin-top:12px;"':''}>
+        ${state.currentPlan===p.id?'Plan activo':'Activar plan'}
+      </button>
+    </div>
+  `).join(''));
+}
+function renderPlansTable(){
+  const allFeats=[...new Set(PLANS.flatMap(p=>p.feat))];
+  document.getElementById('plans-body').innerHTML = fillIcons(`
+    <div class="plan-table-wrap">
+      <table class="plan-table">
+        <thead><tr><th>Beneficio</th>${PLANS.map(p=>`<th class="${state.currentPlan===p.id?'pt-current':''}">${p.name}</th>`).join('')}</tr></thead>
+        <tbody>
+          <tr><td>Precio</td>${PLANS.map(p=>`<td class="pt-price">S/${p.price}</td>`).join('')}</tr>
+          ${allFeats.map(f=>`<tr><td>${f}</td>${PLANS.map(p=>`<td class="${p.feat.includes(f)?'pt-yes':''}">${p.feat.includes(f)?(I('CHECK')||'✓'):'—'}</td>`).join('')}</tr>`).join('')}
+          <tr><td></td>${PLANS.map(p=>`<td><button class="btn-${p.featured?'primary gold':'primary'}" style="padding:8px 10px;font-size:11px;${p.id==='free'?'display:none;':''}" onclick="startPayment('${p.id}')" ${state.currentPlan===p.id?'disabled style="opacity:.5;"':''}>${state.currentPlan===p.id?'Activo':'Elegir'}</button></td>`).join('')}</tr>
+        </tbody>
+      </table>
+    </div>
+  `);
+}
+function startPayment(planId){
+  const plan=PLANS.find(p=>p.id===planId);
+  openSheet(`
+    <div class="sheet-handle"></div>
+    <h3 class="sheet-title">Pagar ${plan.name}</h3>
+    <p class="sheet-sub">S/ ${plan.price} — escanea con Yape o Plin (simulación)</p>
+    <div class="qr-box">
+      <svg width="160" height="160" viewBox="0 0 100 100"><rect width="100" height="100" fill="#fff"/>
+        <g fill="#0a0f0c">
+        <rect x="5" y="5" width="25" height="25"/><rect x="70" y="5" width="25" height="25"/><rect x="5" y="70" width="25" height="25"/>
+        <rect x="12" y="12" width="11" height="11" fill="#fff"/><rect x="77" y="12" width="11" height="11" fill="#fff"/><rect x="12" y="77" width="11" height="11" fill="#fff"/>
+        <rect x="40" y="10" width="6" height="6"/><rect x="50" y="10" width="6" height="6"/><rect x="40" y="40" width="20" height="20"/>
+        <rect x="10" y="40" width="6" height="6"/><rect x="20" y="50" width="6" height="6"/><rect x="70" y="40" width="6" height="6"/>
+        <rect x="80" y="50" width="6" height="6"/><rect x="70" y="70" width="6" height="6"/><rect x="85" y="80" width="10" height="10"/>
+        <rect x="40" y="70" width="6" height="6"/><rect x="50" y="80" width="6" height="6"/><rect x="60" y="60" width="6" height="6"/>
+        </g>
+      </svg>
+    </div>
+    <button class="btn-primary" onclick="confirmPayment('${planId}')">\${ICON_CHECK} Ya pagué, activar</button>
+  `);
+}
+function confirmPayment(planId){
+  state.currentPlan=planId;
+  closeSheet();
+  renderPlayerPlans();
+  toast('¡Plan activado con éxito!');
+}
+
+/* =============================== PLAYER NAV DISPATCH =============================== */
+function playerNav(view){
+  state.playerNav=view;
+  document.querySelectorAll('#screen-player .nav-item').forEach(b=>b.classList.toggle('active',b.dataset.nav===view));
+  if(view==='p-home') renderPlayerHome();
+  else if(view==='p-profile') renderPlayerProfile();
+  else if(view==='p-videos') renderPlayerVideos();
+  else if(view==='p-calendar') renderPlayerCalendar();
+  else if(view==='p-plans') renderPlayerPlans();
+  document.getElementById('p-view-home').scrollTop=0;
+}
+
+/* =============================== SCOUT: DASHBOARD =============================== */
+const SCOUT_NOTIFICATIONS = [
+  {id:'n1',icon:'BOLT',text:'<strong>Jean Rojas</strong> subió un nuevo video de jugadas',time:'Hace 2 horas'},
+  {id:'n2',icon:'USER',text:'3 jugadores nuevos se inscribieron en Lima Norte',time:'Hace 5 horas'},
+  {id:'n3',icon:'STAR',text:'<strong>Marco Huamán</strong> alcanzó 4.6 de calificación',time:'Ayer'},
+  {id:'n4',icon:'CAL',text:'<strong>Diego Fernández</strong> actualizó su disponibilidad',time:'Ayer'},
+  {id:'n5',icon:'TROPHY',text:'<strong>Renzo Quispe</strong> ganó un campeonato distrital',time:'Hace 2 días'},
+];
+function unreadNotifCount(){ return SCOUT_NOTIFICATIONS.filter(n=>!state.notifStatus[n.id]).length; }
+function scoutActivityFeed(){
+  const items=[];
+  [...state.viewedIds].slice(-3).reverse().forEach(id=>{
+    const p=ROSTER.find(r=>r.id===id); if(p) items.push('Viste el perfil de <strong>'+p.name+'</strong>');
+  });
+  [...state.contactedIds].slice(-3).reverse().forEach(id=>{
+    const p=ROSTER.find(r=>r.id===id); if(p) items.push('Contactaste a <strong>'+p.name+'</strong> por WhatsApp');
+  });
+  state.tryouts.slice(-2).reverse().forEach(t=>items.push('Agendaste una prueba con <strong>'+t.name+'</strong> el '+t.date));
+  if(items.length===0) items.push('Explora jugadores para ver tu actividad aquí');
+  return items.slice(0,5);
+}
+function funnelHtml(){
+  const viewed=state.viewedIds.size, contacted=state.contactedIds.size, tryouts=state.tryouts.length;
+  const max=Math.max(viewed,1);
+  const stages=[
+    {label:'Perfiles vistos',val:viewed,color:'var(--info)'},
+    {label:'Contactados por WhatsApp',val:contacted,color:'var(--accent)'},
+    {label:'Pruebas agendadas',val:tryouts,color:'var(--gold)'},
+  ];
+  return stages.map(s=>`
+    <div class="funnel-row">
+      <div class="funnel-top"><span>${s.label}</span><strong>${s.val}</strong></div>
+      <div class="funnel-track"><div class="funnel-fill" style="width:${Math.max(4,Math.round(s.val/max*100))}%;background:${s.color};"></div></div>
+    </div>
+  `).join('') + (viewed===0?'<p style="font-size:12px;color:var(--text-muted);">Explora jugadores para empezar a llenar tu embudo.</p>':'');
+}
+function renderScoutHome(){
+  const totalPlayers=ROSTER.length;
+  const reco=[...ROSTER].sort((a,b)=>b.rating-a.rating).slice(0,5);
+  document.getElementById('s-view-home').innerHTML = fillIcons(`
+    <div class="hero-banner">
+      <span class="badge-gold" style="margin-bottom:8px;display:inline-block;">\${ICON_CROWN} ${state.scoutPlan==='pro'?'Plan Pro activo':'Plan Gratis'}</span>
+      <h3>${state.scoutPlan==='pro'?'Tienes búsqueda avanzada activa':'Potencia tu búsqueda de talento'}</h3>
+      <p>${state.scoutPlan==='pro'?'Filtros ilimitados, contactos sin límite y alertas prioritarias.':'Desbloquea filtros avanzados, contactos ilimitados y alertas de nuevos talentos.'}</p>
+      ${state.scoutPlan==='pro'?'':'<button class="btn-primary gold" style="width:auto;padding:10px 20px;" onclick="scoutNav(&#39;s-profile&#39;)">Ver Plan Pro</button>'}
+    </div>
+
+    <div class="quick-actions">
+      <div class="qa-item" onclick="scoutNav('s-explore')"><div class="qa-icon">\${ICON_SEARCH}</div><span>Explorar</span></div>
+      <div class="qa-item" onclick="openFilterSheet()"><div class="qa-icon">\${ICON_SLIDERS}</div><span>Filtros</span></div>
+      <div class="qa-item" onclick="scoutNav('s-fav')"><div class="qa-icon">\${ICON_HEART}</div><span>Favoritos</span></div>
+      <div class="qa-item" onclick="openNotifications()"><div class="qa-icon">\${ICON_BELL}</div><span>Alertas</span></div>
+    </div>
+
+    <div class="stats-grid" style="margin-top:16px;">
+      <div class="stat-card"><div class="stat-icon success">\${ICON_USER}</div><p class="stat-value">${totalPlayers}</p><p class="stat-label">Jugadores en la red</p></div>
+      <div class="stat-card"><div class="stat-icon info">\${ICON_EYE}</div><p class="stat-value">${state.viewedIds.size}</p><p class="stat-label">Perfiles vistos</p></div>
+      <div class="stat-card"><div class="stat-icon gold">\${ICON_HEART}</div><p class="stat-value">${state.favorites.size}</p><p class="stat-label">Guardados</p></div>
+      <div class="stat-card"><div class="stat-icon danger">\${ICON_WHATSAPP}</div><p class="stat-value">${state.contactedIds.size}</p><p class="stat-label">Contactados</p></div>
+    </div>
+
+    <div class="section-label">Tu embudo de captación</div>
+    <div class="card">
+      ${funnelHtml()}
+    </div>
+
+    <div class="section-label">Recomendados para ti</div>
+    <div class="reco-scroll">
+      ${reco.map(p=>fillIcons(`
+        <div class="reco-card" onclick="viewPlayer(${p.id})">
+          <img src="${p.photo}">
+          <div class="rc-body">
+            <p class="rc-name">${p.name}</p>
+            <p class="rc-pos">${p.pos} · \${ICON_STAR} ${p.rating}</p>
+          </div>
+        </div>
+      `)).join('')}
+    </div>
+
+    <div class="section-label">Actividad reciente</div>
+    <div class="card">
+      ${scoutActivityFeed().map(t=>'<div class="activity-item"><div class="activity-dot"></div><div class="activity-text">'+t+'</div></div>').join('')}
+    </div>
+  `);
+}
+
+function updateNotifBadge(){
+  const el=document.getElementById('notif-dot'); if(!el) return;
+  const n=unreadNotifCount();
+  el.textContent=n>9?'9+':n;
+  el.style.display=n>0?'flex':'none';
+}
+function openNotifications(){
+  openSheet(`
+    <div class="sheet-handle"></div>
+    <h3 class="sheet-title">Notificaciones</h3>
+    <p class="sheet-sub">Novedades de la comunidad El Crack del Barrio</p>
+    <div>${SCOUT_NOTIFICATIONS.map(n=>'<div class="notif-item '+(!state.notifStatus[n.id]?'unread':'')+'"><div class="notif-icon">'+(I(n.icon)||'')+'</div><div><p class="notif-text">'+n.text+'</p><p class="notif-time">'+n.time+'</p></div></div>').join('')}</div>
+  `);
+  SCOUT_NOTIFICATIONS.forEach(n=>state.notifStatus[n.id]=true);
+  updateNotifBadge();
+  persist();
+}
+
+/* =============================== SCOUT: EXPLORE =============================== */
+let scoutFilter={pos:'',search:'',ageMin:16,ageMax:40,city:'',minRating:0,verifiedOnly:false,sortBy:'rating',availDate:''};
+function mockAvailable(playerId,dateStr){
+  if(playerId===1){ const e=myProfile.calendar[dateStrToKey(dateStr)]; return e ? e.status==='disponible' : true; }
+  let h=0; for(const c of (playerId+dateStr)) h=(h*31+c.charCodeAt(0))%97;
+  return h%3!==0;
+}
+function dateStrToKey(dateStr){ const [y,m,d]=dateStr.split('-').map(Number); return calKey(y,m-1,d); }
+function filteredRoster(){
+  let list=ROSTER.filter(p=>{
+    if(scoutFilter.pos && p.pos!==scoutFilter.pos) return false;
+    if(scoutFilter.search && !p.name.toLowerCase().includes(scoutFilter.search.toLowerCase())) return false;
+    if(p.age<scoutFilter.ageMin || p.age>scoutFilter.ageMax) return false;
+    if(scoutFilter.city && p.city!==scoutFilter.city) return false;
+    if(p.rating<scoutFilter.minRating) return false;
+    if(scoutFilter.verifiedOnly && !p.verified) return false;
+    if(scoutFilter.availDate && !mockAvailable(p.id,scoutFilter.availDate)) return false;
+    return true;
+  });
+  if(scoutFilter.sortBy==='rating') list.sort((a,b)=>b.rating-a.rating);
+  else if(scoutFilter.sortBy==='views') list.sort((a,b)=>b.views-a.views);
+  else if(scoutFilter.sortBy==='age') list.sort((a,b)=>a.age-b.age);
+  else if(scoutFilter.sortBy==='verified') list.sort((a,b)=>b.verified-a.verified);
+  return list;
+}
+function citiesList(){ return [...new Set(ROSTER.map(p=>p.city))]; }
+function renderScoutExplore(){
+  document.getElementById('s-view-home').innerHTML = fillIcons(`
+    <div class="search-bar">
+      \${ICON_SEARCH}
+      <input placeholder="Buscar jugador por nombre..." value="${scoutFilter.search}" oninput="scoutFilter.search=this.value;renderExploreList()">
+    </div>
+    ${state.savedSearches.length?`<div class="saved-search-row">${state.savedSearches.map(s=>`
+      <div class="saved-search-chip" onclick="applySavedSearch('${s.id}')">\${ICON_BOOKMARK} ${s.name}<button onclick="event.stopPropagation();deleteSavedSearch('${s.id}')">\${ICON_X}</button></div>
+    `).join('')}</div>`:''}
+    <div class="filter-row">
+      <select class="sort-select" onchange="scoutFilter.sortBy=this.value;renderExploreList()">
+        <option value="rating" ${scoutFilter.sortBy==='rating'?'selected':''}>Mejor calificados</option>
+        <option value="views" ${scoutFilter.sortBy==='views'?'selected':''}>Más vistos</option>
+        <option value="verified" ${scoutFilter.sortBy==='verified'?'selected':''}>Verificados primero</option>
+        <option value="age" ${scoutFilter.sortBy==='age'?'selected':''}>Menor edad</option>
+      </select>
+      <button class="filter-btn" onclick="openFilterSheet()">\${ICON_SLIDERS}</button>
+      <button class="filter-btn map-toggle-btn" onclick="toggleExploreView()">${state.exploreViewMode==='mapa'?I('SEARCH'):I('MAP')}</button>
+    </div>
+    <div class="tab-row" id="pos-tabs">
+      ${['','Arquero','Defensa central','Lateral','Volante','Delantero'].map(p=>`<div class="tab-chip ${scoutFilter.pos===p?'active':''}" onclick="setPosFilter('${p}')">${p||'Todas las posiciones'}</div>`).join('')}
+    </div>
+    <div class="section-label" id="explore-count"></div>
+    <div id="explore-list"></div>
+  `);
+  renderExploreList();
+  syncCompareBar();
+}
+function toggleExploreView(){ state.exploreViewMode = state.exploreViewMode==='mapa'?'lista':'mapa'; renderScoutExplore(); }
+function cityCoords(city){
+  let h=0; for(const c of city) h=(h*31+c.charCodeAt(0))%1000;
+  return { x: 12+(h%76), y: 14+((h*7)%72) };
+}
+function openSaveSearch(){
+  openSheet(`
+    <div class="sheet-handle"></div>
+    <h3 class="sheet-title">Guardar búsqueda</h3>
+    <p class="sheet-sub">Vuelve a aplicar estos filtros con un toque</p>
+    <div class="field"><label>Nombre de la búsqueda</label><input class="input-field" id="ss-name" placeholder="Ej. Delanteros Lima Norte sub-20"></div>
+    <button class="btn-primary" onclick="confirmSaveSearch()">\${ICON_CHECK} Guardar</button>
+  `);
+}
+function confirmSaveSearch(){
+  const name=document.getElementById('ss-name').value.trim();
+  if(!name){ toast('Ponle un nombre a tu búsqueda','X'); return; }
+  scoutFilter.ageMin=Number(document.getElementById('f-age-min')?.value)||scoutFilter.ageMin;
+  scoutFilter.ageMax=Number(document.getElementById('f-age-max')?.value)||scoutFilter.ageMax;
+  state.savedSearches.push({id:'ss'+Date.now(),name,filter:{...scoutFilter}});
+  closeSheet();
+  renderScoutExplore();
+  toast('Búsqueda guardada');
+}
+function applySavedSearch(id){
+  const s=state.savedSearches.find(x=>x.id===id);
+  if(!s) return;
+  scoutFilter={...s.filter};
+  renderScoutExplore();
+  toast('Búsqueda "'+s.name+'" aplicada');
+}
+function deleteSavedSearch(id){
+  state.savedSearches=state.savedSearches.filter(s=>s.id!==id);
+  renderScoutExplore();
+  toast('Búsqueda eliminada');
+}
+function setPosFilter(p){ scoutFilter.pos=p; renderScoutExplore(); }
+function openFilterSheet(){
+  openSheet(`
+    <div class="sheet-handle"></div>
+    <h3 class="sheet-title">Filtros avanzados</h3>
+    <p class="sheet-sub">Encuentra exactamente el perfil que buscas</p>
+    <div class="field"><label>Rango de edad</label>
+      <div class="range-row">
+        <input class="input-field" type="number" id="f-age-min" value="${scoutFilter.ageMin}"> <span style="color:var(--text-muted);">a</span>
+        <input class="input-field" type="number" id="f-age-max" value="${scoutFilter.ageMax}">
+      </div>
+    </div>
+    <div class="field"><label>Ciudad / distrito</label>
+      <select class="input-field" id="f-city">
+        <option value="">Todas las ciudades</option>
+        ${citiesList().map(c=>`<option value="${c}" ${scoutFilter.city===c?'selected':''}>${c}</option>`).join('')}
+      </select>
+    </div>
+    <div class="field"><label>Calificación mínima</label>
+      <select class="input-field" id="f-rating">
+        <option value="0" ${scoutFilter.minRating===0?'selected':''}>Cualquiera</option>
+        <option value="4" ${scoutFilter.minRating===4?'selected':''}>4.0 o más</option>
+        <option value="4.5" ${scoutFilter.minRating===4.5?'selected':''}>4.5 o más</option>
+        <option value="4.8" ${scoutFilter.minRating===4.8?'selected':''}>4.8 o más</option>
+      </select>
+    </div>
+    <div class="field"><label>Disponible el día</label><input class="input-field" type="date" id="f-avail-date" value="${scoutFilter.availDate}"></div>
+    <div class="toggle-row" style="border:none;padding-top:2px;">
+      <div class="toggle-row-text"><p>Solo verificados</p><p>Jugadores con DNI validado</p></div>
+      <label class="switch"><input type="checkbox" id="f-verified" ${scoutFilter.verifiedOnly?'checked':''}><span class="switch-track"></span></label>
+    </div>
+    <button class="btn-primary" style="margin-top:10px;" onclick="applyFilters()">\${ICON_CHECK} Aplicar filtros</button>
+    <button class="btn-ghost" style="width:100%;" onclick="resetFilters()">Limpiar filtros</button>
+    <button class="btn-secondary" style="width:100%;margin-top:8px;" onclick="openSaveSearch()">\${ICON_BOOKMARK} Guardar esta búsqueda</button>
+  `);
+}
+function applyFilters(){
+  scoutFilter.ageMin=Number(document.getElementById('f-age-min').value)||16;
+  scoutFilter.ageMax=Number(document.getElementById('f-age-max').value)||40;
+  scoutFilter.city=document.getElementById('f-city').value;
+  scoutFilter.minRating=Number(document.getElementById('f-rating').value);
+  scoutFilter.availDate=document.getElementById('f-avail-date').value;
+  scoutFilter.verifiedOnly=document.getElementById('f-verified').checked;
+  closeSheet();
+  renderScoutExplore();
+  toast('Filtros aplicados');
+}
+function resetFilters(){
+  scoutFilter={pos:scoutFilter.pos,search:scoutFilter.search,ageMin:16,ageMax:40,city:'',minRating:0,verifiedOnly:false,sortBy:'rating',availDate:''};
+  closeSheet();
+  renderScoutExplore();
+}
+function renderExploreList(){
+  const list=filteredRoster();
+  document.getElementById('explore-count').textContent = list.length+' jugadores encontrados';
+  const el=document.getElementById('explore-list');
+  if(!list.length){ el.innerHTML = fillIcons(`<div class="empty-state">\${ICON_SEARCH}<p>No se encontraron jugadores con esos filtros</p></div>`); return; }
+  if(state.exploreViewMode==='mapa'){
+    el.innerHTML = fillIcons(`
+      <div class="map-mock">
+        ${list.map(p=>{const c=cityCoords(p.city); return `<div class="map-pin ${p.verified?'verified':''}" style="left:${c.x}%;top:${c.y}%;" onclick="viewPlayer(${p.id})"><div class="map-pin-dot">\${ICON_PIN}</div><div class="map-pin-label">${p.name.split(' ')[0]}</div></div>`;}).join('')}
+      </div>
+      <p style="font-size:11.5px;color:var(--text-muted);text-align:center;margin-bottom:10px;">Mapa referencial · toca un marcador para ver el perfil</p>
+    ` + list.map(playerCardHtml).join(''));
+  }else{
+    el.innerHTML = list.map(playerCardHtml).join('');
+  }
+}
+function playerCardHtml(p){
+  const isFav=state.favorites.has(p.id);
+  const isCompared=state.compareSelection.includes(p.id);
+  return fillIcons(`
+    <div class="player-card">
+      <div class="player-photo-wrap" onclick="viewPlayer(${p.id})">
+        <div class="compare-check ${isCompared?'checked':''}" onclick="event.stopPropagation();toggleCompare(${p.id})">\${ICON_CHECK}</div>
+        <img src="${p.photo}">
+        <div class="player-photo-grad"></div>
+        <div class="player-pos-badge">${p.pos}</div>
+        ${p.verified?`<div class="player-verified">\${ICON_SHIELD}</div>`:''}
+        <div class="player-info-overlay">
+          <p class="player-name-ov">${p.name}</p>
+          <p class="player-meta-ov">\${ICON_PIN} ${p.city} · ${p.age} años</p>
+        </div>
+      </div>
+      <div class="player-body">
+        <div class="player-tags">
+          <span class="tag">\${ICON_STAR} ${p.rating}</span>
+          <span class="tag">\${ICON_EYE} ${p.views}</span>
+          <span class="tag">\${ICON_VIDEO} ${p.videos.length}</span>
+        </div>
+        <button class="fav-btn ${isFav?'active':''}" onclick="event.stopPropagation();toggleFav(${p.id})">\${ICON_HEART}</button>
+      </div>
+    </div>
+  `);
+}
+function toggleFav(id){
+  if(state.favorites.has(id)) state.favorites.delete(id); else state.favorites.add(id);
+  if(state.scoutNav==='s-explore') renderExploreList();
+  if(state.scoutNav==='s-fav') renderScoutFav();
+  toast(state.favorites.has(id)?'Añadido a favoritos':'Quitado de favoritos');
+}
+
+/* ---- comparar jugadores ---- */
+function toggleCompare(id){
+  const i=state.compareSelection.indexOf(id);
+  if(i>-1){ state.compareSelection.splice(i,1); }
+  else{
+    if(state.compareSelection.length>=3){ toast('Solo puedes comparar hasta 3 jugadores','X'); return; }
+    state.compareSelection.push(id);
+  }
+  renderExploreList();
+  syncCompareBar();
+}
+function syncCompareBar(){
+  const bar=document.getElementById('compare-bar');
+  const n=state.compareSelection.length;
+  if(!bar) return;
+  bar.classList.toggle('show',n>0);
+  document.getElementById('compare-count').textContent=n+'/3 seleccionados (mín. 2)';
+  document.getElementById('compare-go-btn').disabled = n<2;
+}
+function clearCompare(){ state.compareSelection=[]; if(state.scoutNav==='s-explore') renderExploreList(); syncCompareBar(); }
+function openCompare(){
+  const players=state.compareSelection.map(id=>ROSTER.find(r=>r.id===id)).filter(Boolean);
+  if(players.length<2) return;
+  const rowsDef=[
+    ['Calificación',p=>p.rating],
+    ['Edad',p=>p.age+' años'],
+    ['Vistas totales',p=>p.views],
+    ['Videos',p=>p.videos.length],
+    ['Títulos',p=>p.clubs.filter(c=>c.tipo==='campeon').length],
+    ['Verificado',p=>p.verified?'Sí':'No'],
+  ];
+  openSheet(`
+    <div class="sheet-handle"></div>
+    <h3 class="sheet-title">Comparar jugadores (${players.length})</h3>
+    <div class="vs-row" style="flex-wrap:wrap;">
+      ${players.map((p,i)=>`${i>0?'<div class="vs-mid">VS</div>':''}<div class="vs-col"><img src="${p.photo}"><p class="vname">${p.name}</p><p style="font-size:11px;color:var(--text-muted);">${p.pos}</p></div>`).join('')}
+    </div>
+    ${rowsDef.map(([label,fn])=>{
+      const vals=players.map(fn);
+      const numeric=vals.every(v=>typeof v==='number');
+      const max=numeric?Math.max(...vals):null;
+      return `<div class="vs-stat-row">${vals.map(v=>`<span class="vs-val ${numeric && v===max?'win':''}">${v}</span>`).join('')}<span class="vs-label" style="order:-1;">${label}</span></div>`;
+    }).join('')}
+    <div class="contact-row">
+      ${players.map(p=>`<button class="btn-secondary" onclick="closeSheet();viewPlayer(${p.id})">Ver ${p.name.split(' ')[0]}</button>`).join('')}
+    </div>
+  `);
+}
+
+/* ---- player detail (scout view) ---- */
+function viewPlayer(id){
+  const p=ROSTER.find(r=>r.id===id);
+  state.viewingPlayerId=id;
+  if(!state.viewedIds.has(id)){ state.viewedIds.add(id); p.views++; }
+  const note=state.notes[id]||'';
+  document.getElementById('s-view-home').innerHTML = fillIcons(`
+    <div style="display:flex;justify-content:space-between;align-items:center;margin:-2px 0 12px;">
+      <button class="back-mini" style="margin:0;" onclick="backFromDetail()">\${ICON_BACK}</button>
+      <button class="back-mini" style="margin:0;" onclick="shareProfile('${p.name}')">\${ICON_SHARE}</button>
+    </div>
+    <div class="profile-hero">
+      <img src="${p.photo}">
+      <div class="profile-hero-grad"></div>
+      <div class="profile-hero-bottom">
+        <p class="profile-name-h">${p.name} ${p.verified?'<span style="color:var(--gold);font-size:16px;">'+(I('SHIELD')||'')+'</span>':''}</p>
+        <p class="profile-sub-h">\${ICON_PIN} ${p.city} · \${ICON_STAR} ${p.rating} · ${p.age} años</p>
+      </div>
+    </div>
+    <div style="margin-top:16px;">
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-icon success">\${ICON_JERSEY}</div><p class="stat-value" style="font-size:16px;">${p.pos}</p><p class="stat-label">Posición</p></div>
+        <div class="stat-card"><div class="stat-icon gold">\${ICON_TROPHY}</div><p class="stat-value" style="font-size:16px;">${p.clubs.filter(c=>c.tipo==='campeon').length}</p><p class="stat-label">Títulos</p></div>
+        <div class="stat-card"><div class="stat-icon info">\${ICON_EYE}</div><p class="stat-value" style="font-size:16px;">${p.views}</p><p class="stat-label">Vistas totales</p></div>
+        <div class="stat-card"><div class="stat-icon danger">\${ICON_VIDEO}</div><p class="stat-value" style="font-size:16px;">${p.videos.length}</p><p class="stat-label">Videos</p></div>
+      </div>
+      <div class="card">
+        <p style="font-size:14px;line-height:1.5;color:var(--text-secondary);">${p.bio}</p>
+      </div>
+      <div class="section-label">Ligas y campeonatos</div>
+      <div class="card">${p.clubs.map(c=>fillIcons(`
+        <div class="club-item">
+          <div class="club-icon">\${ICON_TROPHY}</div>
+          <div><p class="club-name">${c.club}</p><p class="club-detail">${c.liga}</p><span class="club-badge ${c.tipo==='campeon'?'badge-gold':c.tipo==='subcampeon'?'badge-success':'badge-muted'}">${c.logro}</span></div>
+        </div>`)).join('')}</div>
+      <div class="section-label">Video de sus mejores jugadas</div>
+      <div class="video-grid">${renderVideoGrid(p.videos,false)}</div>
+      <div class="section-label">Disponibilidad</div>
+      <div class="card" style="display:flex;align-items:center;gap:12px;">
+        \${ICON_CLOCK}
+        <p style="font-size:13px;color:var(--text-secondary);">Este jugador actualiza su calendario en la app. Agenda una prueba y coordina el horario directamente.</p>
+      </div>
+      <div class="section-label">Nota privada</div>
+      <div class="card">
+        <textarea class="input-field" placeholder="Ej. Buen desmarque, evaluar en próxima prueba..." oninput="state.notes[${p.id}]=this.value">${note}</textarea>
+      </div>
+      <div class="contact-row">
+        <button class="btn-secondary" onclick="toggleFav(${p.id})">\${ICON_HEART} ${state.favorites.has(p.id)?'Guardado':'Guardar'}</button>
+        <button class="btn-secondary" onclick="rateSheet(${p.id})">\${ICON_STAR} Calificar</button>
+      </div>
+      <div class="contact-row">
+        <button class="btn-secondary" onclick="scheduleSheet(${p.id})">\${ICON_CAL} Agendar prueba</button>
+        <button class="btn-primary" onclick="contactPlayer('${p.name}','${p.phone}',${p.id})">\${ICON_WHATSAPP} Contactar</button>
+      </div>
+    </div>
+  `);
+}
+function backFromDetail(){
+  if(state.scoutNav==='s-home') renderScoutHome();
+  else if(state.scoutNav==='s-fav') renderScoutFav();
+  else renderScoutExplore();
+}
+function contactPlayer(name,phone,id){
+  state.contactedIds.add(id);
+  toast('Abriendo chat con '+name+'...','WHATSAPP');
+}
+function shareProfile(name){
+  toast('Enlace de '+name+' copiado al portapapeles');
+}
+function rateSheet(id){
+  const p=ROSTER.find(r=>r.id===id);
+  openSheet(`
+    <div class="sheet-handle"></div>
+    <h3 class="sheet-title" style="text-align:center;">Calificar a ${p.name}</h3>
+    <p class="sheet-sub" style="text-align:center;">¿Cómo fue su nivel de juego?</p>
+    <div class="star-input" id="rate-stars">
+      ${[1,2,3,4,5].map(n=>'<span onclick="setRateStar('+n+')" data-star="'+n+'">'+(I('STAR')||'')+'</span>').join('')}
+    </div>
+    <button class="btn-primary" style="margin-top:10px;" onclick="submitRating(${id})">\${ICON_CHECK} Enviar calificación</button>
+  `);
+  window._rateVal=5; setRateStar(5);
+}
+function setRateStar(n){
+  window._rateVal=n;
+  document.querySelectorAll('#rate-stars span').forEach(s=>s.classList.toggle('on',Number(s.dataset.star)<=n));
+}
+function submitRating(id){
+  const p=ROSTER.find(r=>r.id===id);
+  p.rating = Math.round(((p.rating+window._rateVal)/2)*10)/10;
+  closeSheet();
+  toast('¡Gracias por tu calificación!');
+  viewPlayer(id);
+}
+function scheduleSheet(id){
+  const p=ROSTER.find(r=>r.id===id);
+  openSheet(`
+    <div class="sheet-handle"></div>
+    <h3 class="sheet-title">Agendar prueba con ${p.name}</h3>
+    <p class="sheet-sub">Propón fecha, hora y lugar de encuentro</p>
+    <div class="field"><label>Fecha</label><input class="input-field" type="date" id="tr-date"></div>
+    <div style="display:flex;gap:10px;">
+      <div class="field" style="flex:1;"><label>Hora</label><input class="input-field" type="time" id="tr-time" value="16:00"></div>
+      <div class="field" style="flex:1;"><label>Duración</label>
+        <select class="input-field" id="tr-dur"><option>30 min</option><option selected>1 hora</option><option>2 horas</option></select>
+      </div>
+    </div>
+    <div class="field"><label>Lugar</label><input class="input-field" id="tr-place" placeholder="Ej. Losa deportiva Los Olivos"></div>
+    <button class="btn-primary" onclick="confirmTryout(${id})">\${ICON_CHECK} Enviar propuesta</button>
+  `);
+}
+function confirmTryout(id){
+  const p=ROSTER.find(r=>r.id===id);
+  const date=document.getElementById('tr-date').value || 'por confirmar';
+  state.tryouts.push({id:'t'+Date.now(),playerId:id,name:p.name,date,time:document.getElementById('tr-time').value,place:document.getElementById('tr-place').value,status:'pendiente'});
+  closeSheet();
+  toast('Prueba propuesta a '+p.name);
+}
+const TRYOUT_STATUSES=['pendiente','confirmada','realizada'];
+function cycleTryoutStatus(id){
+  const t=state.tryouts.find(x=>x.id===id); if(!t) return;
+  const i=TRYOUT_STATUSES.indexOf(t.status||'pendiente');
+  t.status=TRYOUT_STATUSES[(i+1)%TRYOUT_STATUSES.length];
+  renderScoutProfile();
+  toast('Prueba con '+t.name+': '+t.status);
+}
+
+/* ---- favorites ---- */
+function renderScoutFav(){
+  const list=ROSTER.filter(p=>state.favorites.has(p.id));
+  document.getElementById('s-view-home').innerHTML = fillIcons(`
+    <div class="section-label">Jugadores guardados (${list.length})</div>
+    <div id="fav-list">${list.length?list.map(playerCardHtml).join(''):`<div class="empty-state">\${ICON_HEART}<p>Aún no guardaste jugadores</p></div>`}</div>
+  `);
+  syncCompareBar();
+}
+
+/* ---- scout account ---- */
+function renderScoutProfile(){
+  document.getElementById('s-view-home').innerHTML = fillIcons(`
+    <div style="text-align:center;margin-bottom:18px;">
+      <img src="https://i.pravatar.cc/200?img=53" style="width:96px;height:96px;border-radius:50%;object-fit:cover;border:3px solid var(--gold);margin:0 auto 10px;">
+      <h2 style="font-size:19px;">${state.userName||'Captador Demo'}</h2>
+      <p style="font-size:12.5px;color:var(--text-secondary);">${state.club||'Organización independiente'}</p>
+      <span class="${state.scoutPlan==='pro'?'badge-gold':'badge-muted'}" style="margin-top:8px;display:inline-block;">${state.scoutPlan==='pro'?'Plan Pro':'Plan Gratis'}</span>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card"><div class="stat-icon info">\${ICON_EYE}</div><p class="stat-value">${state.viewedIds.size}</p><p class="stat-label">Perfiles vistos</p></div>
+      <div class="stat-card"><div class="stat-icon success">\${ICON_WHATSAPP}</div><p class="stat-value">${state.contactedIds.size}</p><p class="stat-label">Contactados</p></div>
+      <div class="stat-card"><div class="stat-icon gold">\${ICON_CAL}</div><p class="stat-value">${state.tryouts.length}</p><p class="stat-label">Pruebas agendadas</p></div>
+      <div class="stat-card"><div class="stat-icon danger">\${ICON_HEART}</div><p class="stat-value">${state.favorites.size}</p><p class="stat-label">Guardados</p></div>
+    </div>
+
+    ${state.tryouts.length?`
+    <div class="section-label">Mis pruebas agendadas</div>
+    <div class="card">
+      ${[...state.tryouts].reverse().map(t=>`
+        <div class="tryout-item">
+          <div><p class="tr-name">${t.name}</p><p class="tr-meta">${t.date}${t.time?' · '+t.time:''}${t.place?' · '+t.place:''}</p></div>
+          <button class="status-chip ${t.status||'pendiente'}" onclick="cycleTryoutStatus('${t.id}')">${t.status||'pendiente'}</button>
+        </div>
+      `).join('')}
+    </div>
+    `:''}
+
+    <div class="plan-card featured" style="margin-top:4px;">
+      <div class="plan-ribbon">RECOMENDADO</div>
+      <div class="plan-top"><p class="plan-name">Plan Captador Pro</p>${state.scoutPlan==='pro'?'<span class="badge-success">Activo</span>':''}</div>
+      <p class="plan-price">S/ 15<small> / mes</small></p>
+      <p class="plan-desc">Para captadores y clubes que reclutan seguido.</p>
+      <div class="plan-feat">\${ICON_CHECK}<span>Filtros avanzados ilimitados</span></div>
+      <div class="plan-feat">\${ICON_CHECK}<span>Contactos y pruebas ilimitadas</span></div>
+      <div class="plan-feat">\${ICON_CHECK}<span>Alertas prioritarias de nuevos talentos</span></div>
+      <div class="plan-feat">\${ICON_CHECK}<span>Exportar lista de seguimiento</span></div>
+      <button class="btn-primary gold" style="margin-top:12px;" onclick="toggleScoutPlan()" ${state.scoutPlan==='pro'?'disabled style="opacity:.5;margin-top:12px;"':''}>${state.scoutPlan==='pro'?'Plan activo':'Activar Plan Pro'}</button>
+    </div>
+
+    <div class="section-label">Datos de contacto</div>
+    <div class="card">
+      <div class="field"><label>Nombre completo</label><input class="input-field" value="${state.userName||''}" oninput="state.userName=this.value"></div>
+      <div class="field"><label>Celular</label><input class="input-field" value="${state.userPhone||''}" oninput="state.userPhone=this.value"></div>
+      <div class="field"><label>Club / organización</label><input class="input-field" value="${state.club||''}" oninput="state.club=this.value"></div>
+      <div class="field" style="margin-bottom:0;"><label>Posición que buscas activamente</label>
+        <select class="input-field" onchange="state.scoutArea=this.value">
+          <option value="">Sin preferencia</option>
+          ${['Arquero','Defensa central','Lateral','Volante','Delantero'].map(p=>`<option ${state.scoutArea===p?'selected':''}>${p}</option>`).join('')}
+        </select>
+      </div>
+    </div>
+
+    <div class="section-label">Preferencias</div>
+    <div class="card">
+      <div class="toggle-row">
+        <div class="toggle-row-text"><p>Notificaciones de nuevos talentos</p><p>Alertas cuando se inscriba un jugador que coincida con tu búsqueda</p></div>
+        <label class="switch"><input type="checkbox" checked><span class="switch-track"></span></label>
+      </div>
+      <div class="toggle-row">
+        <div class="toggle-row-text"><p>Solo perfiles verificados</p><p>Oculta jugadores sin DNI validado</p></div>
+        <label class="switch"><input type="checkbox" onchange="scoutFilter.verifiedOnly=this.checked"><span class="switch-track"></span></label>
+      </div>
+    </div>
+
+    <div class="section-label">Alertas de talento</div>
+    ${state.alerts.map(a=>`
+      <div class="alert-card">
+        <div><p class="al-title">${a.pos||'Cualquier posición'}${a.city?' · '+a.city:''}</p><p class="al-sub">Edad máxima ${a.ageMax} años</p></div>
+        <button class="icon-btn" style="width:32px;height:32px;" onclick="deleteAlert('${a.id}')">\${ICON_TRASH}</button>
+      </div>
+    `).join('')}
+    <button class="btn-secondary" onclick="openAlertSheet()">\${ICON_ALERT} Nueva alerta de talento</button>
+
+    <div class="section-label">Cuenta</div>
+    <div class="card" style="padding:0;">
+      <div style="display:flex;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid var(--border-subtle);cursor:pointer;" onclick="toast('Perfil guardado')">
+        <div class="info-row-icon">\${ICON_CHECK}</div><p style="flex:1;font-size:14px;font-weight:600;">Guardar cambios</p>\${ICON_CHEVRON}
+      </div>
+      <div style="display:flex;align-items:center;gap:12px;padding:14px 16px;cursor:pointer;" onclick="logout()">
+        <div class="info-row-icon" style="color:var(--danger);">\${ICON_LOGOUT}</div><p style="flex:1;font-size:14px;font-weight:600;color:var(--danger);">Cerrar sesión</p>
+      </div>
+    </div>
+  `);
+}
+function openAlertSheet(){
+  openSheet(`
+    <div class="sheet-handle"></div>
+    <h3 class="sheet-title">Nueva alerta de talento</h3>
+    <p class="sheet-sub">Te avisaremos cuando un jugador coincida con estos criterios</p>
+    <div class="field"><label>Posición</label>
+      <select class="input-field" id="al-pos">
+        <option value="">Cualquier posición</option>
+        ${['Arquero','Defensa central','Lateral','Volante','Delantero'].map(p=>`<option>${p}</option>`).join('')}
+      </select>
+    </div>
+    <div class="field"><label>Ciudad / distrito</label>
+      <select class="input-field" id="al-city">
+        <option value="">Cualquier ciudad</option>
+        ${citiesList().map(c=>`<option>${c}</option>`).join('')}
+      </select>
+    </div>
+    <div class="field"><label>Edad máxima</label><input class="input-field" type="number" id="al-age" value="23"></div>
+    <button class="btn-primary" onclick="saveAlert()">\${ICON_CHECK} Guardar alerta</button>
+  `);
+}
+function saveAlert(){
+  state.alerts.push({id:'al'+Date.now(),pos:document.getElementById('al-pos').value,city:document.getElementById('al-city').value,ageMax:Number(document.getElementById('al-age').value)||30});
+  closeSheet();
+  renderScoutProfile();
+  toast('Alerta creada');
+}
+function deleteAlert(id){
+  state.alerts=state.alerts.filter(a=>a.id!==id);
+  renderScoutProfile();
+  toast('Alerta eliminada');
+}
+function toggleScoutPlan(){
+  openSheet(`
+    <div class="sheet-handle"></div>
+    <h3 class="sheet-title">Activar Plan Captador Pro</h3>
+    <p class="sheet-sub">S/ 15 / mes — escanea con Yape o Plin (simulación)</p>
+    <div class="qr-box">
+      <svg width="160" height="160" viewBox="0 0 100 100"><rect width="100" height="100" fill="#fff"/>
+        <g fill="#0a0f0c">
+        <rect x="5" y="5" width="25" height="25"/><rect x="70" y="5" width="25" height="25"/><rect x="5" y="70" width="25" height="25"/>
+        <rect x="12" y="12" width="11" height="11" fill="#fff"/><rect x="77" y="12" width="11" height="11" fill="#fff"/><rect x="12" y="77" width="11" height="11" fill="#fff"/>
+        <rect x="40" y="10" width="6" height="6"/><rect x="50" y="10" width="6" height="6"/><rect x="40" y="40" width="20" height="20"/>
+        <rect x="10" y="40" width="6" height="6"/><rect x="20" y="50" width="6" height="6"/><rect x="70" y="40" width="6" height="6"/>
+        <rect x="80" y="50" width="6" height="6"/><rect x="70" y="70" width="6" height="6"/><rect x="85" y="80" width="10" height="10"/>
+        <rect x="40" y="70" width="6" height="6"/><rect x="50" y="80" width="6" height="6"/><rect x="60" y="60" width="6" height="6"/>
+        </g>
+      </svg>
+    </div>
+    <button class="btn-primary gold" onclick="confirmScoutPlan()">\${ICON_CHECK} Ya pagué, activar</button>
+  `);
+}
+function confirmScoutPlan(){
+  state.scoutPlan='pro';
+  closeSheet();
+  renderScoutProfile();
+  toast('¡Plan Pro activado!');
+}
+
+function scoutNav(view){
+  state.scoutNav=view;
+  updateNotifBadge();
+  document.querySelectorAll('#screen-scout .nav-item').forEach(b=>b.classList.toggle('active',b.dataset.nav===view));
+  if(view==='s-home') renderScoutHome();
+  else if(view==='s-explore') renderScoutExplore();
+  else if(view==='s-fav') renderScoutFav();
+  else if(view==='s-profile') renderScoutProfile();
+  document.getElementById('s-view-home').scrollTop=0;
+  if(view!=='s-explore' && view!=='s-fav'){ const bar=document.getElementById('compare-bar'); if(bar) bar.classList.remove('show'); }
+}
+
+/* =============================== BOOT =============================== */
+async function initApp(){
+  document.body.innerHTML = fillIcons(document.body.innerHTML);
+  const bootStart = Date.now();
+  await loadState();
+  const elapsed = Date.now()-bootStart;
+  if(elapsed<450) await new Promise(r=>setTimeout(r,450-elapsed));
+
+  if(state.role==='player' && state.userName){
+    document.getElementById('p-greet-name').textContent = state.userName.split(' ')[0];
+    document.getElementById('p-avatar-top').src = myProfile.photo;
+    showScreen('screen-player');
+    playerNav(state.playerNav==='p-home'||!state.playerNav?'p-home':state.playerNav);
+    toastSilent('¡Bienvenido de nuevo, '+state.userName.split(' ')[0]+'!');
+  }else if(state.role==='scout' && state.userName){
+    document.getElementById('s-greet-name').textContent = state.userName.split(' ')[0];
+    showScreen('screen-scout');
+    scoutNav(state.scoutNav==='s-home'||!state.scoutNav?'s-home':state.scoutNav);
+    toastSilent('¡Bienvenido de nuevo, '+state.userName.split(' ')[0]+'!');
+  }else{
+    showScreen('screen-onboarding');
+  }
+}
+function toastSilent(msg,icon='CHECK'){
+  const t=document.getElementById('toast');
+  t.innerHTML = (I(icon)||'') + '<span>'+msg+'</span>';
+  t.classList.add('show');
+  clearTimeout(window._toastTimer);
+  window._toastTimer=setTimeout(()=>t.classList.remove('show'),2200);
+}
+document.addEventListener('DOMContentLoaded',initApp);
+</script>
+</body>
+</html>
