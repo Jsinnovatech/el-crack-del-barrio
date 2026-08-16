@@ -17,7 +17,7 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(
-    title="El Crack del Barrio — API",
+    title="Vitrina Deportiva — API",
     description="API REST para la app de jugadores y captadores de fútbol. "
                 "Código OTP de desarrollo: 123456.",
     version="1.0.0",
@@ -41,7 +41,7 @@ app.include_router(notificaciones.router)
 
 @app.get("/", tags=["salud"])
 def raiz():
-    return {"app": "El Crack del Barrio", "estado": "ok", "version": "1.0.0"}
+    return {"app": "Vitrina Deportiva", "estado": "ok", "version": "1.0.0"}
 
 
 @app.get("/salud", tags=["salud"])

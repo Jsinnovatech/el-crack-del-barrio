@@ -12,19 +12,19 @@ void main() {
   runApp(
     ChangeNotifierProvider(
       create: (_) => AppState(),
-      child: const CrackDelBarrioApp(),
+      child: const VitrinaDeportivaApp(),
     ),
   );
 }
 
-class CrackDelBarrioApp extends StatefulWidget {
-  const CrackDelBarrioApp({super.key});
+class VitrinaDeportivaApp extends StatefulWidget {
+  const VitrinaDeportivaApp({super.key});
 
   @override
-  State<CrackDelBarrioApp> createState() => _CrackDelBarrioAppState();
+  State<VitrinaDeportivaApp> createState() => _VitrinaDeportivaAppState();
 }
 
-class _CrackDelBarrioAppState extends State<CrackDelBarrioApp> {
+class _VitrinaDeportivaAppState extends State<VitrinaDeportivaApp> {
   @override
   void initState() {
     super.initState();
@@ -37,7 +37,7 @@ class _CrackDelBarrioAppState extends State<CrackDelBarrioApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'El Crack del Barrio',
+      title: 'Vitrina Deportiva',
       debugShowCheckedModeBanner: false,
       theme: buildAppTheme(),
       home: const _RaizApp(),

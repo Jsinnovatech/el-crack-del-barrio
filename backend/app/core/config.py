@@ -2,7 +2,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
-    database_url: str = "postgresql://usuario:password@localhost:5432/crack_del_barrio"
+    database_url: str = "postgresql://usuario:password@localhost:5432/vitrina_deportiva"
     jwt_secret: str = "cambia-este-valor"
     jwt_algorithm: str = "HS256"
     jwt_expire_minutes: int = 10080  # 7 días

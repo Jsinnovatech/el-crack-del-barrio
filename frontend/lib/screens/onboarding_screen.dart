@@ -39,14 +39,14 @@ class OnboardingScreen extends StatelessWidget {
                     text: const TextSpan(
                       children: [
                         TextSpan(
-                          text: 'El Crack ',
+                          text: 'Vitrina ',
                           style: TextStyle(
                               fontSize: 21,
                               fontWeight: FontWeight.w800,
                               color: AppColors.textPrimary),
                         ),
                         TextSpan(
-                          text: 'del Barrio',
+                          text: 'Deportiva',
                           style: TextStyle(
                               fontSize: 21,
                               fontWeight: FontWeight.w800,
@@ -63,7 +63,7 @@ class OnboardingScreen extends StatelessWidget {
                 text: const TextSpan(
                   children: [
                     TextSpan(
-                      text: 'Tu próximo ',
+                      text: 'Tu talento ',
                       style: TextStyle(
                           fontSize: 38,
                           fontWeight: FontWeight.w800,
@@ -71,7 +71,7 @@ class OnboardingScreen extends StatelessWidget {
                           height: 1.05),
                     ),
                     TextSpan(
-                      text: 'crack ',
+                      text: 'merece ',
                       style: TextStyle(
                           fontSize: 38,
                           fontWeight: FontWeight.w800,
@@ -79,7 +79,7 @@ class OnboardingScreen extends StatelessWidget {
                           height: 1.05),
                     ),
                     TextSpan(
-                      text: 'ya está jugando en el barrio',
+                      text: 'ser visto',
                       style: TextStyle(
                           fontSize: 38,
                           fontWeight: FontWeight.w800,

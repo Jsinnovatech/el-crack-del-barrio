@@ -137,7 +137,7 @@ class _ScoutHomeTabState extends State<_ScoutHomeTab> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text('Descubre al próximo crack',
+                const Text('Descubre el próximo talento',
                     style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800)),
                 const SizedBox(height: 4),
                 const Text(

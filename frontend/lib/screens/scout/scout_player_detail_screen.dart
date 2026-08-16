@@ -63,7 +63,7 @@ class _ScoutPlayerDetailScreenState extends State<ScoutPlayerDetailScreen>
     final nombre = widget.jugador.nombreUsuario;
     final posicion = widget.jugador.posicionPrincipal ?? '';
     final mensaje = Uri.encodeComponent(
-        '¡Hola $nombre! Vi tu perfil en El Crack del Barrio. Soy captador y me interesa tu perfil como $posicion. ¿Podemos hablar?');
+        '¡Hola $nombre! Vi tu perfil en Vitrina Deportiva. Soy captador y me interesa tu perfil como $posicion. ¿Podemos hablar?');
     final url = Uri.parse('https://wa.me/$celular?text=$mensaje');
     if (await canLaunchUrl(url)) {
       await launchUrl(url, mode: LaunchMode.externalApplication);
