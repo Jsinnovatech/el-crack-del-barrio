@@ -7,6 +7,7 @@ import '../../core/constants.dart';
 import '../../models/jugador_explorar.dart';
 import '../../state/app_state.dart';
 import '../../widgets/player_card.dart';
+import 'scout_compare_screen.dart';
 import 'scout_player_detail_screen.dart';
 
 class ScoutExploreScreen extends StatefulWidget {
@@ -220,7 +221,11 @@ class _ScoutExploreScreenState extends State<ScoutExploreScreen> {
                     ),
                   ),
                   ElevatedButton(
-                    onPressed: () {/* TODO: navegar a CompareScreen */},
+                    onPressed: () => Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => ScoutCompareScreen(jugadores: List.from(_comparar)),
+                      ),
+                    ),
                     style: ElevatedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                       minimumSize: Size.zero,

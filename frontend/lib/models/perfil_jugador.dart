@@ -29,6 +29,35 @@ class PerfilJugador {
     this.streak = 0,
   });
 
+  PerfilJugador copyWith({
+    String? fotoUrl,
+    String? dniUrl,
+    bool? verificado,
+    String? bio,
+    String? posicionPrincipal,
+    List<String>? posicionesSecundarias,
+    int? edad,
+    String? ciudad,
+    double? rating,
+    String? planId,
+    int? streak,
+  }) =>
+      PerfilJugador(
+        id: id,
+        usuarioId: usuarioId,
+        fotoUrl: fotoUrl ?? this.fotoUrl,
+        dniUrl: dniUrl ?? this.dniUrl,
+        verificado: verificado ?? this.verificado,
+        bio: bio ?? this.bio,
+        posicionPrincipal: posicionPrincipal ?? this.posicionPrincipal,
+        posicionesSecundarias: posicionesSecundarias ?? this.posicionesSecundarias,
+        edad: edad ?? this.edad,
+        ciudad: ciudad ?? this.ciudad,
+        rating: rating ?? this.rating,
+        planId: planId ?? this.planId,
+        streak: streak ?? this.streak,
+      );
+
   factory PerfilJugador.fromJson(Map<String, dynamic> json) => PerfilJugador(
         id: json['id'],
         usuarioId: json['usuario_id'],

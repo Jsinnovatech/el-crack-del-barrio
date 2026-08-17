@@ -23,17 +23,24 @@ class PlayerHomeScreen extends StatefulWidget {
 class _PlayerHomeScreenState extends State<PlayerHomeScreen> {
   int _index = 0;
 
-  final _pages = const [
-    _PlayerHomeTab(),
-    PlayerProfileScreen(),
-    PlayerVideosScreen(),
-    PlayerCalendarScreen(),
-    PlayerPlansScreen(),
-  ];
+  late final List<Widget> _pages;
+
+  @override
+  void initState() {
+    super.initState();
+    _pages = [
+      _PlayerHomeTab(onNavegar: (i) => setState(() => _index = i)),
+      const PlayerProfileScreen(),
+      const PlayerVideosScreen(),
+      const PlayerCalendarScreen(),
+      const PlayerPlansScreen(),
+    ];
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.bgBase,
       body: SafeArea(child: _pages[_index]),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _index,
@@ -51,7 +58,8 @@ class _PlayerHomeScreenState extends State<PlayerHomeScreen> {
 }
 
 class _PlayerHomeTab extends StatefulWidget {
-  const _PlayerHomeTab();
+  final void Function(int index) onNavegar;
+  const _PlayerHomeTab({required this.onNavegar});
 
   @override
   State<_PlayerHomeTab> createState() => _PlayerHomeTabState();
@@ -93,9 +101,15 @@ class _PlayerHomeTabState extends State<_PlayerHomeTab> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('Hola, $nombre 👋', style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w800)),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text('Hola,', style: TextStyle(fontSize: 13, color: AppColors.textMuted)),
+                  Text(nombre, style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w800)),
+                ],
+              ),
               IconButton(
-                icon: const Icon(Icons.logout_rounded),
+                icon: const Icon(Icons.logout_rounded, color: AppColors.textMuted),
                 onPressed: () => context.read<AppState>().cerrarSesion(),
               ),
             ],
@@ -125,14 +139,14 @@ class _PlayerHomeTabState extends State<_PlayerHomeTab> {
                   leading: const Icon(Icons.videocam_rounded, color: AppColors.accent),
                   title: const Text('Subir jugadas destacadas'),
                   trailing: const Icon(Icons.chevron_right),
-                  onTap: () {}, // TODO: navegar a la pestaña de Videos
+                  onTap: () => widget.onNavegar(2),
                 ),
                 const Divider(height: 1),
                 ListTile(
                   leading: const Icon(Icons.calendar_month_rounded, color: AppColors.accent),
                   title: const Text('Actualizar disponibilidad'),
                   trailing: const Icon(Icons.chevron_right),
-                  onTap: () {}, // TODO: navegar a la pestaña de Calendario
+                  onTap: () => widget.onNavegar(3),
                 ),
               ],
             ),
