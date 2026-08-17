@@ -1,9 +1,11 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../core/api_client.dart';
 import '../../core/app_theme.dart';
+import '../../core/imgbb_service.dart';
 
 class PlayerVideosScreen extends StatefulWidget {
   const PlayerVideosScreen({super.key});
@@ -38,74 +40,40 @@ class _PlayerVideosScreenState extends State<PlayerVideosScreen> {
   Future<void> _agregarVideo() async {
     final tituloCtrl = TextEditingController();
     final urlCtrl = TextEditingController();
-    final thumbCtrl = TextEditingController();
+    String? thumbUrl;
 
-    final confirm = await showDialog<bool>(
+    await showModalBottomSheet(
       context: context,
-      builder: (_) => AlertDialog(
-        backgroundColor: AppColors.bgSurface,
-        title: const Text('Agregar video'),
-        content: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                controller: tituloCtrl,
-                decoration: const InputDecoration(labelText: 'Título del video'),
-              ),
-              const SizedBox(height: 12),
-              TextField(
-                controller: urlCtrl,
-                decoration: const InputDecoration(
-                  labelText: 'URL del video (YouTube, Drive...)',
-                  hintText: 'https://youtube.com/watch?v=...',
-                ),
-                keyboardType: TextInputType.url,
-              ),
-              const SizedBox(height: 12),
-              TextField(
-                controller: thumbCtrl,
-                decoration: const InputDecoration(
-                  labelText: 'URL de miniatura (opcional)',
-                  hintText: 'https://...',
-                ),
-                keyboardType: TextInputType.url,
-              ),
-            ],
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancelar', style: TextStyle(color: AppColors.textMuted)),
-          ),
-          ElevatedButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: const Text('Agregar'),
-          ),
-        ],
+      isScrollControlled: true,
+      backgroundColor: AppColors.bgSurface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.xl)),
+      ),
+      builder: (sheetCtx) => _AgregarVideoSheet(
+        tituloCtrl: tituloCtrl,
+        urlCtrl: urlCtrl,
+        onThumbChanged: (url) => thumbUrl = url,
+        onGuardar: () async {
+          final titulo = tituloCtrl.text.trim();
+          final url = urlCtrl.text.trim();
+          if (titulo.isEmpty || url.isEmpty) return;
+          Navigator.pop(sheetCtx);
+          try {
+            await ApiClient.instance.dio.post('/jugadores/me/videos', data: {
+              'titulo': titulo,
+              'url': url,
+              if (thumbUrl != null) 'thumb_url': thumbUrl,
+            });
+            _cargar();
+          } catch (_) {
+            if (mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('No se pudo agregar el video')));
+            }
+          }
+        },
       ),
     );
-
-    if (confirm != true) return;
-
-    final titulo = tituloCtrl.text.trim();
-    final url = urlCtrl.text.trim();
-    if (titulo.isEmpty || url.isEmpty) return;
-
-    try {
-      await ApiClient.instance.dio.post('/jugadores/me/videos', data: {
-        'titulo': titulo,
-        'url': url,
-        if (thumbCtrl.text.trim().isNotEmpty) 'thumb_url': thumbCtrl.text.trim(),
-      });
-      _cargar();
-    } catch (_) {
-      if (mounted) {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(const SnackBar(content: Text('No se pudo agregar el video')));
-      }
-    }
   }
 
   Future<void> _destacar(String videoId, bool esDestacado) async {
@@ -383,6 +351,185 @@ class _IconBtn extends StatelessWidget {
           borderRadius: BorderRadius.circular(AppRadius.sm),
         ),
         child: Icon(icon, size: 16, color: color),
+      ),
+    );
+  }
+}
+
+// ── Sheet para agregar video con miniatura desde ImgBB ───────────────────────
+
+class _AgregarVideoSheet extends StatefulWidget {
+  final TextEditingController tituloCtrl;
+  final TextEditingController urlCtrl;
+  final ValueChanged<String?> onThumbChanged;
+  final VoidCallback onGuardar;
+
+  const _AgregarVideoSheet({
+    required this.tituloCtrl,
+    required this.urlCtrl,
+    required this.onThumbChanged,
+    required this.onGuardar,
+  });
+
+  @override
+  State<_AgregarVideoSheet> createState() => _AgregarVideoSheetState();
+}
+
+class _AgregarVideoSheetState extends State<_AgregarVideoSheet> {
+  String? _thumbUrl;
+  bool _subiendoThumb = false;
+
+  Future<void> _pickThumb(ImageSource source) async {
+    setState(() => _subiendoThumb = true);
+    final url = await ImgBBService.instance.pickAndUpload(source: source);
+    setState(() {
+      _thumbUrl = url;
+      _subiendoThumb = false;
+    });
+    widget.onThumbChanged(url);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.fromLTRB(
+          20, 20, 20, MediaQuery.of(context).viewInsets.bottom + 20),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text('Agregar video',
+              style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800)),
+          const SizedBox(height: 16),
+
+          // Título
+          TextField(
+            controller: widget.tituloCtrl,
+            decoration: const InputDecoration(
+              labelText: 'Título del video',
+              prefixIcon: Icon(Icons.title_rounded),
+            ),
+          ),
+          const SizedBox(height: 12),
+
+          // URL del video
+          TextField(
+            controller: widget.urlCtrl,
+            keyboardType: TextInputType.url,
+            decoration: const InputDecoration(
+              labelText: 'URL del video (YouTube, Drive...)',
+              hintText: 'https://youtube.com/watch?v=...',
+              prefixIcon: Icon(Icons.link_rounded),
+            ),
+          ),
+          const SizedBox(height: 16),
+
+          // Miniatura desde ImgBB
+          const Text('Miniatura',
+              style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
+          const SizedBox(height: 8),
+          Row(
+            children: [
+              // Preview de la miniatura
+              GestureDetector(
+                onTap: () => _pickThumb(ImageSource.gallery),
+                child: Container(
+                  width: 80,
+                  height: 56,
+                  decoration: BoxDecoration(
+                    color: AppColors.bgElevated,
+                    borderRadius: BorderRadius.circular(AppRadius.md),
+                    border: Border.all(
+                        color: _thumbUrl != null
+                            ? AppColors.accent
+                            : AppColors.borderSubtle),
+                  ),
+                  clipBehavior: Clip.antiAlias,
+                  child: _subiendoThumb
+                      ? const Center(
+                          child: CircularProgressIndicator(
+                              color: AppColors.accent, strokeWidth: 2))
+                      : _thumbUrl != null
+                          ? Image.network(_thumbUrl!, fit: BoxFit.cover)
+                          : const Icon(Icons.image_rounded,
+                              color: AppColors.textMuted, size: 28),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  OutlinedButton.icon(
+                    icon: const Icon(Icons.photo_library_rounded, size: 16),
+                    label: const Text('Galería',
+                        style: TextStyle(fontSize: 12)),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: AppColors.accent,
+                      side: const BorderSide(color: AppColors.accent),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 12, vertical: 6),
+                      minimumSize: Size.zero,
+                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    ),
+                    onPressed:
+                        _subiendoThumb ? null : () => _pickThumb(ImageSource.gallery),
+                  ),
+                  const SizedBox(height: 6),
+                  OutlinedButton.icon(
+                    icon: const Icon(Icons.camera_alt_rounded, size: 16),
+                    label: const Text('Cámara',
+                        style: TextStyle(fontSize: 12)),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: AppColors.accent,
+                      side: const BorderSide(color: AppColors.accent),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 12, vertical: 6),
+                      minimumSize: Size.zero,
+                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    ),
+                    onPressed:
+                        _subiendoThumb ? null : () => _pickThumb(ImageSource.camera),
+                  ),
+                ],
+              ),
+              if (_thumbUrl != null) ...[
+                const Spacer(),
+                IconButton(
+                  icon: const Icon(Icons.close_rounded,
+                      color: AppColors.danger, size: 18),
+                  onPressed: () {
+                    setState(() => _thumbUrl = null);
+                    widget.onThumbChanged(null);
+                  },
+                ),
+              ],
+            ],
+          ),
+          const SizedBox(height: 20),
+
+          // Botones
+          Row(
+            children: [
+              Expanded(
+                child: OutlinedButton(
+                  onPressed: () => Navigator.pop(context),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: AppColors.textMuted,
+                    side: const BorderSide(color: AppColors.borderDefault),
+                  ),
+                  child: const Text('Cancelar'),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: ElevatedButton(
+                  onPressed: widget.onGuardar,
+                  child: const Text('Agregar'),
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
