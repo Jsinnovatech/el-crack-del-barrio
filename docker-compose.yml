@@ -1,6 +1,7 @@
 version: '3.9'
 
 services:
+  # BD local (solo para desarrollo sin internet)
   db:
     image: postgres:16-alpine
     restart: always
@@ -24,18 +25,12 @@ services:
       dockerfile: Dockerfile
     restart: always
     command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
-    environment:
-      DATABASE_URL: postgresql://vitrina:vitrina123@db:5432/vitrina_deportiva
-      JWT_SECRET: dev-secret-key-change-in-production-minimum-32-chars
-      OTP_DEV_CODE: "123456"
-      CORS_ORIGINS: "http://localhost:3000,http://localhost:8080,http://10.0.2.2:8000"
+    env_file:
+      - ./backend/.env
     ports:
       - "8000:8000"
     volumes:
       - ./backend:/app
-    depends_on:
-      db:
-        condition: service_healthy
 
 volumes:
   pg_data:
