@@ -66,6 +66,15 @@ class AppState extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> recargarPerfil() async {
+    if (usuario?.rol != Rol.jugador) return;
+    try {
+      final res = await ApiClient.instance.dio.get('/jugadores/me');
+      miPerfilJugador = PerfilJugador.fromJson(res.data);
+      notifyListeners();
+    } catch (_) {}
+  }
+
   Future<void> cerrarSesion() async {
     await ApiClient.instance.borrarToken();
     usuario = null;

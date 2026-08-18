@@ -61,7 +61,7 @@ class _PlayerVideosScreenState extends State<PlayerVideosScreen> {
           try {
             await ApiClient.instance.dio.post('/jugadores/me/videos', data: {
               'titulo': titulo,
-              'url': url,
+              'video_url': url,
               if (thumbUrl != null) 'thumb_url': thumbUrl,
             });
             _cargar();
@@ -129,14 +129,23 @@ class _PlayerVideosScreenState extends State<PlayerVideosScreen> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text('Mis videos',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800)),
-              TextButton.icon(
-                icon: const Icon(Icons.add_rounded, size: 18),
-                label: const Text('Agregar'),
-                style: TextButton.styleFrom(foregroundColor: AppColors.accent),
-                onPressed: _agregarVideo,
-              ),
+              Text('Mis videos  (${_videos.length}/5)',
+                  style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w800)),
+              if (_videos.length < 5)
+                TextButton.icon(
+                  icon: const Icon(Icons.add_rounded, size: 18),
+                  label: const Text('Agregar'),
+                  style: TextButton.styleFrom(foregroundColor: AppColors.accent),
+                  onPressed: _agregarVideo,
+                )
+              else
+                const Padding(
+                  padding: EdgeInsets.only(right: 4),
+                  child: Chip(
+                    label: Text('Máx. alcanzado', style: TextStyle(fontSize: 11)),
+                    backgroundColor: AppColors.warning,
+                  ),
+                ),
             ],
           ),
         ),

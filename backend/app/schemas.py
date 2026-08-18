@@ -5,7 +5,7 @@ from typing import Optional
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from app.models import EstadoDisponibilidad, EstadoPago, EstadoPrueba, MetodoPago, Rol
+from app.models import EstadoPago, EstadoPrueba, MetodoPago, Rol
 
 
 # ---------- Auth / Usuario ----------
@@ -35,7 +35,7 @@ class UsuarioOut(BaseModel):
     creado_en: datetime
 
 
-# ---------- Jugador público (para exploración por captadores) ----------
+# ---------- Jugador público ----------
 class JugadorPublicoOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)
     id: str
@@ -47,7 +47,6 @@ class JugadorPublicoOut(BaseModel):
     ciudad: Optional[str] = None
     rating: float = 0
     plan_id: Optional[str] = None
-    # Nombre del usuario (se agrega manualmente desde el router)
     nombre_usuario: Optional[str] = None
 
 
@@ -61,11 +60,13 @@ class EstadisticasJugador(BaseModel):
 # ---------- Perfil Jugador ----------
 class PerfilJugadorUpdate(BaseModel):
     foto_url: Optional[str] = None
-    bio: Optional[str] = Field(default=None, min_length=10)
+    bio: Optional[str] = None
     posicion_principal: Optional[str] = None
     posiciones_secundarias: Optional[list[str]] = None
     edad: Optional[int] = None
     ciudad: Optional[str] = None
+    telefono: Optional[str] = None
+    whatsapp: Optional[str] = None
 
 
 class PerfilJugadorOut(BaseModel):
@@ -80,6 +81,8 @@ class PerfilJugadorOut(BaseModel):
     posiciones_secundarias: list[str]
     edad: Optional[int]
     ciudad: Optional[str]
+    telefono: Optional[str]
+    whatsapp: Optional[str]
     rating: float
     plan_id: Optional[str]
     streak: int
@@ -108,10 +111,55 @@ class VideoOut(BaseModel):
 
 
 class VideoReorder(BaseModel):
-    orden_ids: list[str]  # lista de video_id en el nuevo orden
+    orden_ids: list[str]
 
 
-# ---------- Club ----------
+# ---------- Historial Deportivo ----------
+class HistorialCreate(BaseModel):
+    torneo: str
+    equipo: str
+    anio: Optional[int] = None
+    posicion: Optional[str] = None
+    logro: Optional[str] = None
+
+
+class HistorialOut(HistorialCreate):
+    model_config = ConfigDict(from_attributes=True)
+    id: str
+
+
+# ---------- Franja de Disponibilidad ----------
+class FranjaCreate(BaseModel):
+    fecha: date
+    hora_inicio: Optional[str] = None
+    hora_fin: Optional[str] = None
+    estado: str = Field(..., pattern="^(ocupado|libre)$")
+    descripcion: Optional[str] = None
+
+
+class FranjaOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    id: str
+    fecha: date
+    hora_inicio: Optional[str]
+    hora_fin: Optional[str]
+    estado: str
+    descripcion: Optional[str]
+
+
+# ---------- Foto de Equipo ----------
+class FotoEquipoCreate(BaseModel):
+    url_foto: str
+    resena: Optional[str] = None
+
+
+class FotoEquipoOut(FotoEquipoCreate):
+    model_config = ConfigDict(from_attributes=True)
+    id: str
+    orden: int
+
+
+# ---------- Club (historial legacy) ----------
 class ClubCreate(BaseModel):
     nombre: str
     tipo: str
@@ -119,19 +167,6 @@ class ClubCreate(BaseModel):
 
 
 class ClubOut(ClubCreate):
-    model_config = ConfigDict(from_attributes=True)
-    id: str
-
-
-# ---------- Disponibilidad ----------
-class DisponibilidadUpsert(BaseModel):
-    fecha: date
-    estado: EstadoDisponibilidad
-    hora_desde: Optional[str] = None
-    hora_hasta: Optional[str] = None
-
-
-class DisponibilidadOut(DisponibilidadUpsert):
     model_config = ConfigDict(from_attributes=True)
     id: str
 
@@ -261,7 +296,7 @@ class NotificacionOut(BaseModel):
     creado_en: datetime
 
 
-# ---------- Explorar (filtros de búsqueda) ----------
+# ---------- Explorar ----------
 class FiltroExplorar(BaseModel):
     posicion: Optional[str] = None
     busqueda: Optional[str] = None
@@ -271,4 +306,4 @@ class FiltroExplorar(BaseModel):
     rating_min: float = 0
     solo_verificados: bool = False
     disponible_fecha: Optional[date] = None
-    orden: str = "rating"  # rating | vistas | verificado | edad
+    orden: str = "rating"

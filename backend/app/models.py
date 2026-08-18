@@ -20,10 +20,9 @@ class Rol(str, enum.Enum):
     captador = "captador"
 
 
-class EstadoDisponibilidad(str, enum.Enum):
-    disponible = "disponible"
-    contratado = "contratado"
-    no_disponible = "no_disponible"
+class EstadoFranja(str, enum.Enum):
+    ocupado = "ocupado"
+    libre = "libre"
 
 
 class EstadoPago(str, enum.Enum):
@@ -72,6 +71,8 @@ class PerfilJugador(Base):
     posiciones_secundarias = Column(ARRAY(String), default=list)
     edad = Column(Integer, nullable=True)
     ciudad = Column(String, nullable=True)
+    telefono = Column(String, nullable=True)
+    whatsapp = Column(String, nullable=True)
     rating = Column(Numeric(3, 2), default=0)
     plan_id = Column(String, ForeignKey("planes.id"), nullable=True)
     plan_expira = Column(DateTime(timezone=True), nullable=True)
@@ -83,7 +84,9 @@ class PerfilJugador(Base):
     plan = relationship("Plan", back_populates="jugadores")
     videos = relationship("Video", back_populates="jugador", cascade="all, delete-orphan", order_by="Video.orden")
     clubes = relationship("Club", back_populates="jugador", cascade="all, delete-orphan")
-    disponibilidad = relationship("Disponibilidad", back_populates="jugador", cascade="all, delete-orphan")
+    historial = relationship("HistorialDeportivo", back_populates="jugador", cascade="all, delete-orphan", order_by="HistorialDeportivo.anio.desc()")
+    disponibilidad = relationship("FranjaDisponibilidad", back_populates="jugador", cascade="all, delete-orphan")
+    fotos = relationship("FotoEquipo", back_populates="jugador", cascade="all, delete-orphan", order_by="FotoEquipo.orden")
     pagos = relationship("Pago", back_populates="jugador", cascade="all, delete-orphan")
     favorito_de = relationship("Favorito", back_populates="jugador", cascade="all, delete-orphan")
     contactado_por = relationship("Contacto", back_populates="jugador", cascade="all, delete-orphan")
@@ -119,18 +122,48 @@ class Club(Base):
     jugador = relationship("PerfilJugador", back_populates="clubes")
 
 
-class Disponibilidad(Base):
-    __tablename__ = "disponibilidad"
-    __table_args__ = (UniqueConstraint("jugador_id", "fecha", name="uq_disponibilidad_jugador_fecha"),)
+class HistorialDeportivo(Base):
+    __tablename__ = "historial_deportivo"
+
+    id = Column(String, primary_key=True, default=gen_uuid)
+    jugador_id = Column(String, ForeignKey("perfiles_jugador.id", ondelete="CASCADE"), nullable=False)
+    torneo = Column(String, nullable=False)
+    equipo = Column(String, nullable=False)
+    anio = Column(Integer, nullable=True)
+    posicion = Column(String, nullable=True)
+    logro = Column(String, nullable=True)
+    creado_en = Column(DateTime(timezone=True), server_default=func.now())
+
+    jugador = relationship("PerfilJugador", back_populates="historial")
+
+
+class FranjaDisponibilidad(Base):
+    """Franja horaria de disponibilidad — múltiples franjas por día."""
+    __tablename__ = "franjas_disponibilidad"
 
     id = Column(String, primary_key=True, default=gen_uuid)
     jugador_id = Column(String, ForeignKey("perfiles_jugador.id", ondelete="CASCADE"), nullable=False)
     fecha = Column(Date, nullable=False)
-    estado = Column(Enum(EstadoDisponibilidad), nullable=False)
-    hora_desde = Column(String, nullable=True)
-    hora_hasta = Column(String, nullable=True)
+    hora_inicio = Column(String, nullable=True)   # "10:00"
+    hora_fin = Column(String, nullable=True)       # "11:00"
+    estado = Column(String, nullable=False)        # "ocupado" | "libre"
+    descripcion = Column(String, nullable=True)    # opcional: "Liga Distrital"
+    creado_en = Column(DateTime(timezone=True), server_default=func.now())
 
     jugador = relationship("PerfilJugador", back_populates="disponibilidad")
+
+
+class FotoEquipo(Base):
+    __tablename__ = "fotos_equipo"
+
+    id = Column(String, primary_key=True, default=gen_uuid)
+    jugador_id = Column(String, ForeignKey("perfiles_jugador.id", ondelete="CASCADE"), nullable=False)
+    url_foto = Column(String, nullable=False)
+    resena = Column(Text, nullable=True)
+    orden = Column(Integer, default=0)
+    creado_en = Column(DateTime(timezone=True), server_default=func.now())
+
+    jugador = relationship("PerfilJugador", back_populates="fotos")
 
 
 class Plan(Base):

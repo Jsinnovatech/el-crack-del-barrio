@@ -9,6 +9,8 @@ class PerfilJugador {
   final List<String> posicionesSecundarias;
   final int? edad;
   final String? ciudad;
+  final String? telefono;
+  final String? whatsapp;
   final double rating;
   final String? planId;
   final int streak;
@@ -24,6 +26,8 @@ class PerfilJugador {
     this.posicionesSecundarias = const [],
     this.edad,
     this.ciudad,
+    this.telefono,
+    this.whatsapp,
     this.rating = 0,
     this.planId,
     this.streak = 0,
@@ -38,6 +42,8 @@ class PerfilJugador {
     List<String>? posicionesSecundarias,
     int? edad,
     String? ciudad,
+    String? telefono,
+    String? whatsapp,
     double? rating,
     String? planId,
     int? streak,
@@ -53,6 +59,8 @@ class PerfilJugador {
         posicionesSecundarias: posicionesSecundarias ?? this.posicionesSecundarias,
         edad: edad ?? this.edad,
         ciudad: ciudad ?? this.ciudad,
+        telefono: telefono ?? this.telefono,
+        whatsapp: whatsapp ?? this.whatsapp,
         rating: rating ?? this.rating,
         planId: planId ?? this.planId,
         streak: streak ?? this.streak,
@@ -69,6 +77,8 @@ class PerfilJugador {
         posicionesSecundarias: List<String>.from(json['posiciones_secundarias'] ?? []),
         edad: json['edad'],
         ciudad: json['ciudad'],
+        telefono: json['telefono'],
+        whatsapp: json['whatsapp'],
         rating: (json['rating'] ?? 0).toDouble(),
         planId: json['plan_id'],
         streak: json['streak'] ?? 0,
