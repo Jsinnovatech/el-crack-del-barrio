@@ -13,6 +13,10 @@ class Settings(BaseSettings):
 
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
+    def model_post_init(self, __context) -> None:
+        # Strip espacios por si el env var viene con espacios extra
+        object.__setattr__(self, 'otp_dev_code', self.otp_dev_code.strip())
+
     @property
     def cors_origins_list(self) -> list[str]:
         return [o.strip() for o in self.cors_origins.split(",") if o.strip()]
